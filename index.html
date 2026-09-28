@@ -1,30 +1,630 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TokenScope — Curated Crypto Scanner</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{--bg:#070b12;--panel:#0d1420;--panel2:#111b29;--text:#f4f7fb;--muted:#8e9aab;--line:#1d2a3a;--accent:#64f2a4;--danger:#ff6b7a;--warn:#ffd166}
-    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#070b12,#09111c);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    button,input,select{font:inherit}button{cursor:pointer;border:0}.wrap{max-width:1180px;margin:auto;padding:22px}
-    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:24px}.brand{font-size:24px;font-weight:800}.brand span{color:var(--accent)}
-    .tag{color:var(--muted);font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{padding:10px 14px;border-radius:10px;background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn.primary{background:var(--accent);color:#06110b;border-color:var(--accent);font-weight:800}.btn.danger{color:#ffdce0;border-color:#4b2028}
-    .hero{padding:28px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 85% 15%,#123021 0,transparent 30%),var(--panel);margin-bottom:18px}.hero h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px}.hero p{color:var(--muted);max-width:760px;margin:0;line-height:1.6}
-    .bar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.search{flex:1;min-width:220px;padding:13px 15px;background:#0a111b;border:1px solid var(--line);border-radius:12px;color:var(--text);outline:none}.select{padding:13px;background:#0a111b;border:1px solid var(--line);border-radius:12px;color:var(--text)}
-    .status{font-size:12px;color:var(--muted);margin:8px 0 16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}.top{display:flex;justify-content:space-between;gap:12px}.coin{display:flex;gap:10px;align-items:center}.logo{width:42px;height:42px;border-radius:50%;background:#172334;object-fit:cover}.name{font-weight:800}.symbol{font-size:12px;color:var(--muted)}.pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#13261e;color:var(--accent);border:1px solid #1f4b37;text-transform:capitalize}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.metric{padding:10px;border-radius:10px;background:#0a111b}.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.metric b{font-size:14px}.up{color:var(--accent)}.down{color:var(--danger)}.note{font-size:12px;color:var(--muted);line-height:1.5}.empty{padding:30px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
-    .modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal.show{display:flex}.box{width:min(620px,100%);background:#0c131e;border:1px solid var(--line);border-radius:18px;padding:20px}.box h2{margin-top:0}.field{margin:10px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px;background:#080e17;border:1px solid var(--line);border-radius:10px;color:var(--text)}.field textarea{min-height:80px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.close{float:right;background:none;color:var(--muted);font-size:22px}.admin-list{margin-top:18px}.admin-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-top:1px solid var(--line)}footer{padding:28px 0;color:var(--muted);font-size:11px;text-align:center}
-    @media(max-width:600px){.wrap{padding:14px}.row{grid-template-columns:1fr}header{align-items:flex-start}.hero{padding:20px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TokenScope — Curated Crypto Scanner</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{--bg:#070b12;--panel:#0d1420;--panel2:#111b29;--text:#f4f7fb;--muted:#8e9aab;--line:#1d2a3a;--accent:#64f2a4;--danger:#ff6b7a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#070b12,#09111c);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:22px}
+.brand{font-size:24px;font-weight:800}
+.brand span{color:var(--accent)}
+.tag{color:var(--muted);font-size:12px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
+.actions{display:flex;gap:8px}
+.btn{padding:10px 14px;border-radius:10px;background:var(--panel2);color:var(--text);border:1px solid var(--line);cursor:pointer}
+.btn.primary{background:var(--accent);color:#06110b;font-weight:800}
+.hero{padding:28px;border:1px solid var(--line);border-radius:20px;background:var(--panel);margin-bottom:18px}
+.hero h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px}
+.hero p{color:var(--muted);line-height:1.6}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.search{flex:1;min-width:220px;padding:13px 15px;background:#0a111b;border:1px solid var(--line);border-radius:12px;color:var(--text)}
+select{padding:13px;background:#0a111b;border:1px solid var(--line);border-radius:12px;color:var(--text)}
+.status{font-size:12px;color:var(--muted);margin:8px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.top{display:flex;justify-content:space-between;gap:12px}
+.coin{display:flex;gap:10px;align-items:center}
+.logo{width:42px;height:42px;border-radius:50%;background:#172334;object-fit:cover}
+.name{font-weight:800}
+.symbol{font-size:12px;color:var(--muted)}
+.pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#13261e;color:var(--accent);border:1px solid #1f4b37;text-transform:capitalize}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.metric{padding:10px;border-radius:10px;background:#0a111b}
+.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.metric b{font-size:14px}
+.up{color:var(--accent)}
+.down{color:var(--danger)}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+.empty{padding:30px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal.show{display:flex}
+.box{width:min(620px,100%);background:#0c131e;border:1px solid var(--line);border-radius:18px;padding:20px}
+.box h2{margin-top:0}
+.close{float:right;background:none;color:var(--muted);font-size:22px;border:0}
+.field{margin:10px 0}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:11px;background:#080e17;border:1px solid var(--line);border-radius:10px;color:var(--text)}
+.field textarea{min-height:80px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-list{margin-top:18px}
+.admin-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-top:1px solid var(--line)}
+@media(max-width:600px){
+.wrap{padding:14px}
+.row{grid-template-columns:1fr}
+header{align-items:flex-start}
+.hero{padding:20px}
+}
+</style>
 </head>
+
 <body>
+
 <div class="wrap">
-  <header>
-    <div><div class="brand">Token<span>Scope</span></div><div class="tag">Curated token discovery • live market metrics</div></div>
-    <div class="actions"><button class="btn" id="refreshBtn">Refresh</button><button class="btn" id="loginBtn">Admin</button></div>
-  </header>
 
-  <section class="hero"><h1>Find tokens worth watching.</h1><p>TokenScope is a curated scanner. Tokens are manually published by the owner; market metrics are refreshed from live DEX data.</p></section>
+<header>
+<div>
+<div class="brand">Token<span>Scope</span></div>
+<div class="tag">Curated token discovery • live market metrics</div>
+</div>
 
-  <div class="bar"><input id="search" class="search" placeholder="Search published tokens…"/><select id="chain" class="select"><option value="">All chains</option><option value="solana">Solana</
+<div class="actions">
+<button class="btn" id="refreshBtn" type="button">Refresh</button>
+<button class="btn" id="loginBtn" type="button" onclick="document.getElementById('adminModal').classList.add('show')">Admin</button>
+</div>
+</header>
+
+<section class="hero">
+<h1>Find tokens worth watching.</h1>
+<p>TokenScope is a curated scanner. Tokens are manually published by the owner; market metrics are refreshed from live DEX data.</p>
+</section>
+
+<div class="bar">
+
+<input id="search" class="search" placeholder="Search published tokens…">
+
+<select id="chain">
+<option value="">All chains</option>
+<option value="solana">Solana</option>
+<option value="bsc">BSC</option>
+<option value="ethereum">Ethereum</option>
+<option value="base">Base</option>
+</select>
+
+<select id="category">
+<option value="">All categories</option>
+<option value="trading">Trading</option>
+<option value="holding">Holding</option>
+</select>
+
+</div>
+
+<div id="status" class="status">Loading published tokens…</div>
+<div id="grid" class="grid"></div>
+
+<div id="adminModal" class="modal">
+
+<div class="box">
+
+<button class="close" id="closeAdmin" type="button">×</button>
+
+<h2>TokenScope Admin</h2>
+
+<div id="loginArea">
+
+<div class="field">
+<label>Email</label>
+<input id="email" type="email" autocomplete="email" placeholder="Admin email">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="Password">
+</div>
+
+<button class="btn primary" id="doLogin" type="button">Login</button>
+
+<div id="loginMsg" class="status"></div>
+
+</div>
+
+<div id="adminArea" style="display:none">
+
+<div class="field">
+<label>Search token by name, symbol or contract</label>
+<input id="tokenSearch" placeholder="e.g. BTC, SOL, contract address">
+</div>
+
+<button class="btn primary" id="searchToken" type="button">Search</button>
+
+<div id="searchResults" class="admin-list"></div>
+
+<button class="btn" id="logoutBtn" type="button">Logout</button>
+
+</div>
+
+</div>
+</div>
+
+<footer>TokenScope • Curated token discovery</footer>
+
+</div>
+
+<script>
+// @ts-nocheck
+
+const SUPABASE_URL="https://gbywmujikcbjbjbztron.supabase.co";
+
+const SUPABASE_KEY="sb_publishable_j_8CYR9brKtDoWRedsG4OQ_8mivKF0G";
+
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const $=id=>document.getElementById(id);
+
+const fmt=n=>{
+if(n===null||n===undefined||Number.isNaN(Number(n)))return "—";
+n=Number(n);
+if(Math.abs(n)>=1e9)return "$"+(n/1e9).toFixed(2)+"B";
+if(Math.abs(n)>=1e6)return "$"+(n/1e6).toFixed(2)+"M";
+if(Math.abs(n)>=1e3)return "$"+(n/1e3).toFixed(2)+"K";
+if(Math.abs(n)<1)return "$"+n.toPrecision(5);
+return "$"+n.toFixed(2)
+};
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m]));
+
+let tokens=[];
+
+async function loadTokens(){
+
+$("status").textContent="Loading published tokens…";
+
+const {data,error}=await sb
+.from("published_tokens")
+.select("*")
+.eq("active",true)
+.order("published_at",{ascending:false});
+
+if(error){
+$("status").textContent="Could not load tokens: "+error.message;
+return;
+}
+
+tokens=data||[];
+
+await render();
+}
+
+async function liveData(t){
+
+try{
+
+const r=await fetch(
+"https://api.dexscreener.com/latest/dex/tokens/"
++encodeURIComponent(t.token_address)
+);
+
+const j=await r.json();
+
+const pairs=(j.pairs||[])
+.filter(p=>!t.chain_id||p.chainId===t.chain_id);
+
+const p=pairs.sort(
+(a,b)=>
+Number(b.liquidity?.usd||0)-
+Number(a.liquidity?.usd||0)
+)[0]||pairs[0];
+
+return p||null;
+
+}catch(e){
+
+return null;
+
+}
+
+}
+
+async function render(){
+
+const q=$("search").value.toLowerCase().trim();
+
+const ch=$("chain").value;
+
+const cat=$("category").value;
+
+const filtered=tokens.filter(t=>
+(!q||[t.name,t.symbol,t.token_address]
+.join(" ")
+.toLowerCase()
+.includes(q))
+&&(!ch||t.chain_id===ch)
+&&(!cat||t.category===cat)
+);
+
+$("status").textContent=
+filtered.length+
+" published token"+
+(filtered.length===1?"":"s")+
+" • live metrics";
+
+if(!filtered.length){
+
+$("grid").innerHTML=
+'<div class="empty">No published tokens yet.</div>';
+
+return;
+}
+
+$("grid").innerHTML=filtered.map(t=>`
+
+<div class="card" id="card-${esc(t.id)}">
+
+<div class="top">
+
+<div class="coin">
+
+<img
+class="logo"
+src="https://dd.dexscreener.com/ds-data/tokens/${encodeURIComponent(t.chain_id)}/${encodeURIComponent(t.token_address)}.png"
+onerror="this.style.display='none'">
+
+<div>
+
+<div class="name">${esc(t.name)}</div>
+
+<div class="symbol">
+${esc(t.symbol)} • ${esc(t.chain_id)}
+</div>
+
+</div>
+
+</div>
+
+<span class="pill">${esc(t.category)}</span>
+
+</div>
+
+<div class="metrics">
+
+<div class="metric">
+<small>Price</small>
+<b data-k="price">Loading…</b>
+</div>
+
+<div class="metric">
+<small>24h Change</small>
+<b data-k="change">Loading…</b>
+</div>
+
+<div class="metric">
+<small>Liquidity</small>
+<b data-k="liq">Loading…</b>
+</div>
+
+<div class="metric">
+<small>24h Volume</small>
+<b data-k="vol">Loading…</b>
+</div>
+
+<div class="metric">
+<small>Market Cap</small>
+<b data-k="mc">Loading…</b>
+</div>
+
+<div class="metric">
+<small>DEX / Pair</small>
+<b data-k="dex">Loading…</b>
+</div>
+
+</div>
+
+${t.note?`<div class="note">${esc(t.note)}</div>`:""}
+
+</div>
+
+`).join("");
+
+await Promise.all(filtered.map(async t=>{
+
+const p=await liveData(t);
+
+const card=$("card-"+t.id);
+
+if(!card)return;
+
+if(!p){
+
+card.querySelector('[data-k="price"]').textContent="Unavailable";
+
+card.querySelector('[data-k="change"]').textContent="—";
+
+return;
+
+}
+
+const change=Number(p.priceChange?.h24);
+
+card.querySelector('[data-k="price"]').textContent=
+fmt(p.priceUsd);
+
+card.querySelector('[data-k="change"]').textContent=
+Number.isFinite(change)?change.toFixed(2)+"%":"—";
+
+card.querySelector('[data-k="change"]').className=
+Number.isFinite(change)
+?(change>=0?"up":"down")
+:"";
+
+card.querySelector('[data-k="liq"]').textContent=
+fmt(p.liquidity?.usd);
+
+card.querySelector('[data-k="vol"]').textContent=
+fmt(p.volume?.h24);
+
+card.querySelector('[data-k="mc"]').textContent=
+fmt(p.marketCap||p.fdv);
+
+card.querySelector('[data-k="dex"]').textContent=
+(p.dexId||"—")+" / "+
+(p.baseToken?.symbol||t.symbol);
+
+}));
+
+}
+
+async function openAdmin(){
+
+$("adminModal").classList.add("show");
+
+const {data:{session}}=await sb.auth.getSession();
+
+if(session){
+
+$("loginArea").style.display="none";
+
+$("adminArea").style.display="block";
+
+}else{
+
+$("loginArea").style.display="block";
+
+$("adminArea").style.display="none";
+
+}
+
+}
+
+$("loginBtn").addEventListener("click",openAdmin);
+
+$("closeAdmin").addEventListener("click",()=>
+$("adminModal").classList.remove("show")
+);
+
+$("adminModal").addEventListener("click",e=>{
+
+if(e.target===$("adminModal"))
+$("adminModal").classList.remove("show");
+
+});
+
+$("refreshBtn").addEventListener("click",loadTokens);
+
+$("search").addEventListener("input",render);
+
+$("chain").addEventListener("change",render);
+
+$("category").addEventListener("change",render);
+
+$("doLogin").addEventListener("click",async()=>{
+
+$("loginMsg").textContent="Signing in…";
+
+const {data,error}=await sb.auth.signInWithPassword({
+
+email:$("email").value.trim(),
+
+password:$("password").value
+
+});
+
+if(error){
+
+$("loginMsg").textContent=error.message;
+
+return;
+
+}
+
+$("loginArea").style.display="none";
+
+$("adminArea").style.display="block";
+
+$("loginMsg").textContent="";
+
+});
+
+$("logoutBtn").addEventListener("click",async()=>{
+
+await sb.auth.signOut();
+
+$("adminArea").style.display="none";
+
+$("loginArea").style.display="block";
+
+});
+
+$("searchToken").addEventListener("click",async()=>{
+
+const q=$("tokenSearch").value.trim();
+
+if(!q)return;
+
+$("searchResults").innerHTML="Searching…";
+
+try{
+
+const r=await fetch(
+"https://api.dexscreener.com/latest/dex/search?q="
++encodeURIComponent(q)
+);
+
+const j=await r.json();
+
+const pairs=(j.pairs||[]).slice(0,8);
+
+if(!pairs.length){
+
+$("searchResults").innerHTML="No token found.";
+
+return;
+
+}
+
+$("searchResults").innerHTML=pairs.map((p,i)=>`
+
+<div class="admin-item">
+
+<div>
+
+<b>${esc(p.baseToken?.name||"Unknown")}</b>
+
+(${esc(p.baseToken?.symbol||"")})
+
+<div class="symbol">
+
+${esc(p.chainId)} •
+${esc(p.dexId||"")} •
+${esc(p.baseToken?.address||"")}
+
+</div>
+
+</div>
+
+<button
+class="btn primary"
+type="button"
+onclick="publishToken(${i})">
+
+Publish
+
+</button>
+
+</div>
+
+`).join("");
+
+window.adminPairs=pairs;
+
+}catch(e){
+
+$("searchResults").innerHTML=
+"Search failed: "+esc(e.message);
+
+}
+
+});
+
+window.publishToken=async function(i){
+
+const p=window.adminPairs?.[i];
+
+if(!p)return;
+
+const category=prompt(
+"Category: trading or holding",
+"trading"
+);
+
+if(
+!category||
+!["trading","holding"].includes(category.toLowerCase())
+)return;
+
+const note=prompt("Optional note","");
+
+const {data:{user}}=await sb.auth.getUser();
+
+if(!user){
+
+alert("Please login again.");
+
+return;
+
+}
+
+const {error}=await sb
+.from("published_tokens")
+.insert({
+
+chain_id:p.chainId,
+
+token_address:p.baseToken.address,
+
+symbol:p.baseToken.symbol,
+
+name:p.baseToken.name,
+
+category:category.toLowerCase(),
+
+note:note||null,
+
+pair_address:p.pairAddress||null,
+
+dex_id:p.dexId||null,
+
+active:true,
+
+published_by:user.id
+
+});
+
+if(error){
+
+alert("Publish failed: "+error.message);
+
+return;
+
+}
+
+alert("Token published successfully.");
+
+await loadTokens();
+
+};
+
+sb.auth.onAuthStateChange((_event,session)=>{
+
+if(session){
+
+$("loginArea").style.display="none";
+
+$("adminArea").style.display="block";
+
+}
+
+});
+
+loadTokens().catch(e=>
+console.error("TokenScope load error:",e)
+);
+
+setInterval(()=>
+loadTokens().catch(e=>
+console.error("TokenScope refresh error:",e)
+),60000);
+
+</script>
+
+</body>
+</html>
