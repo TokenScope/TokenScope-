@@ -1,628 +1,1154 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TokenScope — Curated Crypto Scanner</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenScope — Crypto Token Analyzer</title>
 
-<style>
-:root{--bg:#070b12;--panel:#0d1420;--panel2:#111b29;--text:#f4f7fb;--muted:#8e9aab;--line:#1d2a3a;--accent:#64f2a4;--danger:#ff6b7a}
-*{box-sizing:border-box}
-body{margin:0;background:linear-gradient(180deg,#070b12,#09111c);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
-.wrap{max-width:1180px;margin:auto;padding:22px}
-.brand{font-size:24px;font-weight:800}
-.brand span{color:var(--accent)}
-.tag{color:var(--muted);font-size:12px}
-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
-.actions{display:flex;gap:8px}
-.btn{padding:10px 14px;border-radius:10px;background:var(--panel2);color:var(--text);border:1px solid var(--line);cursor:pointer}
-.btn.primary{background:var(--accent);color:#06110b;font-weight:800}
-.hero{padding:28px;border:1px solid var(--line);border-radius:20px;background:var(--panel);margin-bottom:18px}
-.hero h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px}
-.hero p{color:var(--muted);line-height:1.6}
-.bar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
-.search{flex:1;min-width:220px;padding:13px 15px;background:#0a111b;border:1px solid var(--line);border-radius:12px;color:var(--text)}
-select{padding:13px;background:#0a111b;border:1px solid var(--line);border-radius:12px;color:var(--text)}
-.status{font-size:12px;color:var(--muted);margin:8px 0 16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
-.top{display:flex;justify-content:space-between;gap:12px}
-.coin{display:flex;gap:10px;align-items:center}
-.logo{width:42px;height:42px;border-radius:50%;background:#172334;object-fit:cover}
-.name{font-weight:800}
-.symbol{font-size:12px;color:var(--muted)}
-.pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#13261e;color:var(--accent);border:1px solid #1f4b37;text-transform:capitalize}
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
-.metric{padding:10px;border-radius:10px;background:#0a111b}
-.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
-.metric b{font-size:14px}
-.up{color:var(--accent)}
-.down{color:var(--danger)}
-.note{font-size:12px;color:var(--muted);line-height:1.5}
-.empty{padding:30px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
-.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
-.modal.show{display:flex}
-.box{width:min(620px,100%);background:#0c131e;border:1px solid var(--line);border-radius:18px;padding:20px}
-.box h2{margin-top:0}
-.close{float:right;background:none;color:var(--muted);font-size:22px;border:0}
-.field{margin:10px 0}
-.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;padding:11px;background:#080e17;border:1px solid var(--line);border-radius:10px;color:var(--text)}
-.field textarea{min-height:80px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.admin-list{margin-top:18px}
-.admin-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-top:1px solid var(--line)}
-@media(max-width:600px){
-.wrap{padding:14px}
-.row{grid-template-columns:1fr}
-header{align-items:flex-start}
-.hero{padding:20px}
-}
-</style>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #07090d;
+      --panel: #0d1118;
+      --panel2: #111720;
+      --border: #202832;
+      --text: #f5f7fa;
+      --muted: #8c97a6;
+      --green: #36d98b;
+      --red: #ff5d6c;
+      --blue: #4c8dff;
+      --yellow: #f2c94c;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(7, 9, 13, .94);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1250px;
+      margin: auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 170px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #ffffff, #687384);
+      color: #07090d;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .brand-text {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .brand-text span {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .top-search {
+      flex: 1;
+      position: relative;
+    }
+
+    .top-search input {
+      width: 100%;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 45px 12px 15px;
+      outline: none;
+    }
+
+    .top-search input:focus {
+      border-color: #3b4655;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    .header-btn {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 13px;
+    }
+
+    main {
+      max-width: 1250px;
+      margin: auto;
+      padding: 22px 18px 90px;
+    }
+
+    .hero {
+      padding: 22px 0 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 700px;
+      line-height: 1.6;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0 18px;
+    }
+
+    .tab {
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+
+    .tab.active {
+      background: #171d26;
+      color: var(--text);
+      border-color: #394453;
+    }
+
+    .search-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .search-box h2 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .search-box p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 9px;
+    }
+
+    .search-row input {
+      flex: 1;
+      min-width: 0;
+      background: #080b10;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 13px;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .primary {
+      background: var(--text);
+      color: #080a0e;
+      border: 0;
+      border-radius: 10px;
+      padding: 0 18px;
+      font-weight: 800;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .filter {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .filter label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 7px;
+    }
+
+    .filter select,
+    .filter input {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 0;
+      outline: none;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 25px 0 12px;
+      gap: 10px;
+    }
+
+    .section-head h2 {
+      font-size: 19px;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tokens {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .token-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 15px;
+      transition: .2s;
+    }
+
+    .token-card:hover {
+      border-color: #394453;
+      transform: translateY(-2px);
+    }
+
+    .token-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .token-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .coin {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #202733;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .token-name strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .token-name small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .change {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .positive {
+      color: var(--green);
+    }
+
+    .negative {
+      color: var(--red);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .metric {
+      background: #090c11;
+      border-radius: 9px;
+      padding: 9px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+
+    .metric strong {
+      font-size: 12px;
+    }
+
+    .score-box {
+      margin-top: 12px;
+      padding: 11px;
+      border-radius: 10px;
+      background: #111820;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .score {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .score-label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      color: var(--muted);
+    }
+
+    .analyzer {
+      display: none;
+    }
+
+    .analyzer.active {
+      display: block;
+    }
+
+    .result-header {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .result-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .result-title .coin {
+      width: 50px;
+      height: 50px;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status.pending {
+      background: #151a21;
+      color: var(--muted);
+    }
+
+    .status.match {
+      background: rgba(54, 217, 139, .08);
+      color: var(--green);
+    }
+
+    .status.no-match {
+      background: rgba(255, 93, 108, .08);
+      color: var(--red);
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .panel h3 {
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+
+    .chart-placeholder {
+      height: 280px;
+      border-radius: 12px;
+      background:
+        linear-gradient(transparent 95%, #202832 95%),
+        linear-gradient(90deg, transparent 95%, #202832 95%);
+      background-size: 40px 40px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .analysis-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .analysis-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      background: #090c11;
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
+    .analysis-item span {
+      color: var(--muted);
+    }
+
+    .notice {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(7, 9, 13, .96);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(15px);
+    }
+
+    .bottom-inner {
+      max-width: 700px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .nav-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 4px;
+      font-size: 10px;
+    }
+
+    .nav-btn.active {
+      color: var(--text);
+    }
+
+    .nav-icon {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 78px;
+      background: #171d25;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 15px;
+      border-radius: 10px;
+      display: none;
+      z-index: 200;
+      font-size: 13px;
+      max-width: 320px;
+    }
+
+    @media (max-width: 900px) {
+      .tokens {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filters {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .header-inner {
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        min-width: auto;
+      }
+
+      .top-search {
+        order: 3;
+        flex-basis: 100%;
+      }
+
+      main {
+        padding: 15px 12px 85px;
+      }
+
+      .tokens {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .search-row {
+        flex-direction: column;
+      }
+
+      .primary {
+        height: 45px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="wrap">
+<div class="app">
 
-<header>
-<div>
-<div class="brand">Token<span>Scope</span></div>
-<div class="tag">Curated token discovery • live market metrics</div>
+  <header>
+    <div class="header-inner">
+
+      <div class="brand">
+        <div class="logo">TS</div>
+        <div class="brand-text">
+          TokenScope <span>Analyzer</span>
+        </div>
+      </div>
+
+      <div class="top-search">
+        <input
+          id="globalSearch"
+          type="text"
+          placeholder="Search token, symbol or contract address..."
+          autocomplete="off"
+        >
+        <div class="search-icon">⌕</div>
+      </div>
+
+      <button class="header-btn" onclick="showNotice('Account system will be connected next.')">
+        Account
+      </button>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <section class="hero">
+      <h1>Discover. Analyze. Track.</h1>
+      <p>
+        TokenScope brings token discovery, market data, on-chain analysis,
+        security signals and wallet activity into one place.
+      </p>
+    </section>
+
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchView('screener', this)">
+        Screener
+      </button>
+
+      <button class="tab" onclick="switchView('analyzer', this)">
+        Token Analyzer
+      </button>
+    </div>
+
+
+    <!-- SCREENER -->
+
+    <section id="screenerView">
+
+      <div class="search-box">
+        <h2>Search & Analyze Any Token</h2>
+
+        <p>
+          Paste a contract address or search by token name/symbol.
+          TokenScope will analyze the token against its criteria.
+        </p>
+
+        <div class="search-row">
+          <input
+            id="analyzerInput"
+            type="text"
+            placeholder="Enter token name, symbol or contract address..."
+          >
+
+          <button class="primary" onclick="analyzeToken()">
+            Analyze
+          </button>
+        </div>
+      </div>
+
+
+      <div class="filters">
+
+        <div class="filter">
+          <label>CHAIN</label>
+          <select id="chainFilter">
+            <option>All Chains</option>
+            <option>Ethereum</option>
+            <option>Solana</option>
+            <option>Base</option>
+            <option>Arbitrum</option>
+            <option>BSC</option>
+          </select>
+        </div>
+
+        <div class="filter">
+          <label>MIN LIQUIDITY</label>
+          <input id="liquidityFilter" type="number" placeholder="$0">
+        </div>
+
+        <div class="filter">
+          <label>MIN VOLUME</label>
+          <input id="volumeFilter" type="number" placeholder="$0">
+        </div>
+
+        <div class="filter">
+          <label>MIN MARKET CAP</label>
+          <input id="marketFilter" type="number" placeholder="$0">
+        </div>
+
+      </div>
+
+
+      <div class="section-head">
+        <h2>TokenScope Discovery</h2>
+        <span id="scannerStatus">Automatic discovery engine</span>
+      </div>
+
+
+      <div id="tokenGrid" class="tokens">
+
+        <div class="empty">
+          <strong>Discovery engine ready</strong>
+          <br><br>
+          Real token discovery data will appear here after the
+          TokenScope data engine is connected.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ANALYZER -->
+
+    <section id="analyzerView" class="analyzer">
+
+      <div class="section-head">
+        <h2>Token Analyzer</h2>
+        <span>Evidence-based analysis</span>
+      </div>
+
+
+      <div class="result-header">
+
+        <div class="result-title">
+          <div class="coin" id="resultCoin">TS</div>
+
+          <div>
+            <h2 id="resultName">No token selected</h2>
+            <small id="resultAddress" style="color:#8c97a6;">
+              Search a token to begin analysis
+            </small>
+          </div>
+        </div>
+
+        <div id="resultStatus" class="status pending">
+          Waiting for token analysis.
+        </div>
+
+      </div>
+
+
+      <div class="analysis-grid">
+
+        <div class="panel">
+          <h3>Price Chart</h3>
+
+          <div class="chart-placeholder">
+            Real-time chart will connect to the data engine.
+          </div>
+
+          <p class="notice">
+            TokenScope will use market and blockchain sources to populate
+            this chart when the real data adapter is connected.
+          </p>
+        </div>
+
+
+        <div class="panel">
+
+          <h3>Market Data</h3>
+
+          <div class="analysis-list">
+
+            <div class="analysis-item">
+              <span>Price</span>
+              <strong id="rPrice">—</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>24h Change</span>
+              <strong id="rChange">—</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Liquidity</span>
+              <strong id="rLiquidity">—</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>24h Volume</span>
+              <strong id="rVolume">—</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Market Cap</span>
+              <strong id="rMarketCap">—</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="analysis-grid" style="margin-top:12px;">
+
+        <div class="panel">
+
+          <h3>On-Chain Analysis</h3>
+
+          <div class="analysis-list">
+
+            <div class="analysis-item">
+              <span>Holders</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Holder Concentration</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Whale Activity</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Dev Wallet History</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Bundle Analysis</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel">
+
+          <h3>Security & Risk</h3>
+
+          <div class="analysis-list">
+
+            <div class="analysis-item">
+              <span>Contract</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Liquidity Status</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Ownership</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+            <div class="analysis-item">
+              <span>Mint / Freeze</span>
+              <strong>Awaiting data</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="panel" style="margin-top:12px;">
+
+        <h3>TokenScope Score</h3>
+
+        <div style="display:flex;align-items:center;gap:20px;">
+
+          <div id="resultScore"
+               style="font-size:42px;font-weight:900;">
+            —
+          </div>
+
+          <div>
+            <strong>Explainable score</strong>
+
+            <p class="notice">
+              The final score will be calculated from measurable
+              TokenScope criteria such as liquidity, volume, market
+              activity, holder distribution, security signals and
+              other verified data.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <nav class="bottom-nav">
+
+    <div class="bottom-inner">
+
+      <button class="nav-btn active" onclick="goHome(this)">
+        <span class="nav-icon">⌂</span>
+        Screener
+      </button>
+
+      <button class="nav-btn" onclick="focusSearch(this)">
+        <span class="nav-icon">⌕</span>
+        Search
+      </button>
+
+      <button class="nav-btn" onclick="showNotice('TokenScope Score explanation will be added.')">
+        <span class="nav-icon">◈</span>
+        Score
+      </button>
+
+      <button class="nav-btn" onclick="showNotice('Watchlist will be connected to user accounts.')">
+        <span class="nav-icon">☆</span>
+        Watchlist
+      </button>
+
+      <button class="nav-btn" onclick="showNotice('Menu and settings will be connected next.')">
+        <span class="nav-icon">☰</span>
+        Menu
+      </button>
+
+    </div>
+
+  </nav>
+
+
+  <div id="toast" class="toast"></div>
+
 </div>
 
-<div class="actions">
-<button class="btn" id="refreshBtn" type="button">Refresh</button>
-<button class="btn" id="loginBtn" type="button" onclick="document.getElementById('adminModal').classList.add('show')">Admin</button>
-</div>
-</header>
-
-<section class="hero">
-<h1>Find tokens worth watching.</h1>
-<p>TokenScope is a curated scanner. Tokens are manually published by the owner; market metrics are refreshed from live DEX data.</p>
-</section>
-
-<div class="bar">
-
-<input id="search" class="search" placeholder="Search published tokens…">
-
-<select id="chain">
-<option value="">All chains</option>
-<option value="solana">Solana</option>
-<option value="bsc">BSC</option>
-<option value="ethereum">Ethereum</option>
-<option value="base">Base</option>
-</select>
-
-<select id="category">
-<option value="">All categories</option>
-<option value="trading">Trading</option>
-<option value="holding">Holding</option>
-</select>
-
-</div>
-
-<div id="status" class="status">Loading published tokens…</div>
-<div id="grid" class="grid"></div>
-
-<div id="adminModal" class="modal">
-
-<div class="box">
-
-<button class="close" id="closeAdmin" type="button">×</button>
-
-<h2>TokenScope Admin</h2>
-
-<div id="loginArea">
-
-<div class="field">
-<label>Email</label>
-<input id="email" type="email" autocomplete="email" placeholder="Admin email">
-</div>
-
-<div class="field">
-<label>Password</label>
-<input id="password" type="password" autocomplete="current-password" placeholder="Password">
-</div>
-
-<button class="btn primary" id="doLogin" type="button">Login</button>
-
-<div id="loginMsg" class="status"></div>
-
-</div>
-
-<div id="adminArea" style="display:none">
-
-<div class="field">
-<label>Search token by name, symbol or contract</label>
-<input id="tokenSearch" placeholder="e.g. BTC, SOL, contract address">
-</div>
-
-<button class="btn primary" id="searchToken" type="button">Search</button>
-
-<div id="searchResults" class="admin-list"></div>
-
-<button class="btn" id="logoutBtn" type="button">Logout</button>
-
-</div>
-
-</div>
-</div>
-
-<footer>TokenScope • Curated token discovery</footer>
-
-</div>
 
 <script>
-// @ts-nocheck
 
-const SUPABASE_URL="https://gbywmujikcbjbjbztron.supabase.co";
+  /*
+   * TOKENSCOPE
+   * UI FOUNDATION
+   *
+   * IMPORTANT:
+   * No fake live token data is used here.
+   * Real data adapters will be connected in the next phase.
+   */
 
-const SUPABASE_KEY="sb_publishable_j_8CYR9brKtDoWRedsG4OQ_8mivKF0G";
 
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  function showNotice(message) {
 
-const $=id=>document.getElementById(id);
+    const toast = document.getElementById("toast");
 
-const fmt=n=>{
-if(n===null||n===undefined||Number.isNaN(Number(n)))return "—";
-n=Number(n);
-if(Math.abs(n)>=1e9)return "$"+(n/1e9).toFixed(2)+"B";
-if(Math.abs(n)>=1e6)return "$"+(n/1e6).toFixed(2)+"M";
-if(Math.abs(n)>=1e3)return "$"+(n/1e3).toFixed(2)+"K";
-if(Math.abs(n)<1)return "$"+n.toPrecision(5);
-return "$"+n.toFixed(2)
-};
+    toast.textContent = message;
+    toast.style.display = "block";
 
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-}[m]));
+    clearTimeout(window.toastTimer);
 
-let tokens=[];
+    window.toastTimer = setTimeout(() => {
+      toast.style.display = "none";
+    }, 3000);
+  }
 
-async function loadTokens(){
 
-$("status").textContent="Loading published tokens…";
+  function switchView(view, button) {
 
-const {data,error}=await sb
-.from("published_tokens")
-.select("*")
-.eq("active",true)
-.order("published_at",{ascending:false});
+    document.querySelectorAll(".tab")
+      .forEach(tab => tab.classList.remove("active"));
 
-if(error){
-$("status").textContent="Could not load tokens: "+error.message;
-return;
-}
+    button.classList.add("active");
 
-tokens=data||[];
+    const screener = document.getElementById("screenerView");
+    const analyzer = document.getElementById("analyzerView");
 
-await render();
-}
+    if (view === "analyzer") {
 
-async function liveData(t){
+      screener.style.display = "none";
+      analyzer.classList.add("active");
 
-try{
+    } else {
 
-const r=await fetch(
-"https://api.dexscreener.com/latest/dex/tokens/"
-+encodeURIComponent(t.token_address)
-);
+      screener.style.display = "block";
+      analyzer.classList.remove("active");
 
-const j=await r.json();
+    }
 
-const pairs=(j.pairs||[])
-.filter(p=>!t.chain_id||p.chainId===t.chain_id);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
 
-const p=pairs.sort(
-(a,b)=>
-Number(b.liquidity?.usd||0)-
-Number(a.liquidity?.usd||0)
-)[0]||pairs[0];
 
-return p||null;
+  function analyzeToken() {
 
-}catch(e){
+    const input =
+      document.getElementById("analyzerInput").value.trim();
 
-return null;
+    if (!input) {
 
-}
+      showNotice(
+        "Enter a token name, symbol or contract address first."
+      );
 
-}
+      return;
+    }
 
-async function render(){
 
-const q=$("search").value.toLowerCase().trim();
+    const analyzerTab =
+      document.querySelectorAll(".tab")[1];
 
-const ch=$("chain").value;
+    switchView("analyzer", analyzerTab);
 
-const cat=$("category").value;
 
-const filtered=tokens.filter(t=>
-(!q||[t.name,t.symbol,t.token_address]
-.join(" ")
-.toLowerCase()
-.includes(q))
-&&(!ch||t.chain_id===ch)
-&&(!cat||t.category===cat)
-);
+    const coin =
+      document.getElementById("resultCoin");
 
-$("status").textContent=
-filtered.length+
-" published token"+
-(filtered.length===1?"":"s")+
-" • live metrics";
+    const name =
+      document.getElementById("resultName");
 
-if(!filtered.length){
+    const address =
+      document.getElementById("resultAddress");
 
-$("grid").innerHTML=
-'<div class="empty">No published tokens yet.</div>';
+    const status =
+      document.getElementById("resultStatus");
 
-return;
-}
 
-$("grid").innerHTML=filtered.map(t=>`
+    const shortName =
+      input.length > 3
+        ? input.substring(0, 3).toUpperCase()
+        : input.toUpperCase();
 
-<div class="card" id="card-${esc(t.id)}">
 
-<div class="top">
+    coin.textContent = shortName;
 
-<div class="coin">
+    name.textContent = input;
 
-<img
-class="logo"
-src="https://dd.dexscreener.com/ds-data/tokens/${encodeURIComponent(t.chain_id)}/${encodeURIComponent(t.token_address)}.png"
-onerror="this.style.display='none'">
+    address.textContent =
+      input.length > 20
+        ? input.substring(0, 12) + "..." +
+          input.substring(input.length - 8)
+        : "Search request received";
 
-<div>
 
-<div class="name">${esc(t.name)}</div>
+    status.className = "status pending";
 
-<div class="symbol">
-${esc(t.symbol)} • ${esc(t.chain_id)}
-</div>
+    status.textContent =
+      "Token found in search request. Real data analysis engine is being connected.";
 
-</div>
 
-</div>
+    document.getElementById("rPrice").textContent = "—";
+    document.getElementById("rChange").textContent = "—";
+    document.getElementById("rLiquidity").textContent = "—";
+    document.getElementById("rVolume").textContent = "—";
+    document.getElementById("rMarketCap").textContent = "—";
+    document.getElementById("resultScore").textContent = "—";
 
-<span class="pill">${esc(t.category)}</span>
 
-</div>
+    showNotice(
+      "Analyzer request created. Real data adapter comes next."
+    );
 
-<div class="metrics">
+  }
 
-<div class="metric">
-<small>Price</small>
-<b data-k="price">Loading…</b>
-</div>
 
-<div class="metric">
-<small>24h Change</small>
-<b data-k="change">Loading…</b>
-</div>
+  function focusSearch(button) {
 
-<div class="metric">
-<small>Liquidity</small>
-<b data-k="liq">Loading…</b>
-</div>
+    document.querySelectorAll(".nav-btn")
+      .forEach(btn => btn.classList.remove("active"));
 
-<div class="metric">
-<small>24h Volume</small>
-<b data-k="vol">Loading…</b>
-</div>
+    button.classList.add("active");
 
-<div class="metric">
-<small>Market Cap</small>
-<b data-k="mc">Loading…</b>
-</div>
+    const input =
+      document.getElementById("analyzerInput");
 
-<div class="metric">
-<small>DEX / Pair</small>
-<b data-k="dex">Loading…</b>
-</div>
+    input.focus();
 
-</div>
+    input.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
 
-${t.note?`<div class="note">${esc(t.note)}</div>`:""}
 
-</div>
+  function goHome(button) {
 
-`).join("");
+    document.querySelectorAll(".nav-btn")
+      .forEach(btn => btn.classList.remove("active"));
 
-await Promise.all(filtered.map(async t=>{
+    button.classList.add("active");
 
-const p=await liveData(t);
+    document.querySelectorAll(".tab")
+      .forEach(tab => tab.classList.remove("active"));
 
-const card=$("card-"+t.id);
+    document.querySelector(".tab").classList.add("active");
 
-if(!card)return;
+    document.getElementById("screenerView").style.display = "block";
 
-if(!p){
+    document.getElementById("analyzerView")
+      .classList.remove("active");
 
-card.querySelector('[data-k="price"]').textContent="Unavailable";
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
 
-card.querySelector('[data-k="change"]').textContent="—";
 
-return;
+  document
+    .getElementById("globalSearch")
+    .addEventListener("keydown", function(event) {
 
-}
+      if (event.key === "Enter") {
 
-const change=Number(p.priceChange?.h24);
+        const value = this.value.trim();
 
-card.querySelector('[data-k="price"]').textContent=
-fmt(p.priceUsd);
+        if (!value) return;
 
-card.querySelector('[data-k="change"]').textContent=
-Number.isFinite(change)?change.toFixed(2)+"%":"—";
+        document.getElementById("analyzerInput").value = value;
 
-card.querySelector('[data-k="change"]').className=
-Number.isFinite(change)
-?(change>=0?"up":"down")
-:"";
+        analyzeToken();
 
-card.querySelector('[data-k="liq"]').textContent=
-fmt(p.liquidity?.usd);
+      }
 
-card.querySelector('[data-k="vol"]').textContent=
-fmt(p.volume?.h24);
+    });
 
-card.querySelector('[data-k="mc"]').textContent=
-fmt(p.marketCap||p.fdv);
 
-card.querySelector('[data-k="dex"]').textContent=
-(p.dexId||"—")+" / "+
-(p.baseToken?.symbol||t.symbol);
+  document
+    .getElementById("analyzerInput")
+    .addEventListener("keydown", function(event) {
 
-}));
+      if (event.key === "Enter") {
+        analyzeToken();
+      }
 
-}
-
-async function openAdmin(){
-
-$("adminModal").classList.add("show");
-
-const {data:{session}}=await sb.auth.getSession();
-
-if(session){
-
-$("loginArea").style.display="none";
-
-$("adminArea").style.display="block";
-
-}else{
-
-$("loginArea").style.display="block";
-
-$("adminArea").style.display="none";
-
-}
-
-}
-
-$("loginBtn").addEventListener("click",openAdmin);
-
-$("closeAdmin").addEventListener("click",()=>
-$("adminModal").classList.remove("show")
-);
-
-$("adminModal").addEventListener("click",e=>{
-
-if(e.target===$("adminModal"))
-$("adminModal").classList.remove("show");
-
-});
-
-$("refreshBtn").addEventListener("click",loadTokens);
-
-$("search").addEventListener("input",render);
-
-$("chain").addEventListener("change",render);
-
-$("category").addEventListener("change",render);
-
-$("doLogin").addEventListener("click",async()=>{
-
-$("loginMsg").textContent="Signing in…";
-
-const {data,error}=await sb.auth.signInWithPassword({
-
-email:$("email").value.trim(),
-
-password:$("password").value
-
-});
-
-if(error){
-
-$("loginMsg").textContent=error.message;
-
-return;
-
-}
-
-$("loginArea").style.display="none";
-
-$("adminArea").style.display="block";
-
-$("loginMsg").textContent="";
-
-});
-
-$("logoutBtn").addEventListener("click",async()=>{
-
-await sb.auth.signOut();
-
-$("adminArea").style.display="none";
-
-$("loginArea").style.display="block";
-
-});
-
-$("searchToken").addEventListener("click",async()=>{
-
-const q=$("tokenSearch").value.trim();
-
-if(!q)return;
-
-$("searchResults").innerHTML="Searching…";
-
-try{
-
-const r=await fetch(
-"https://api.dexscreener.com/latest/dex/search?q="
-+encodeURIComponent(q)
-);
-
-const j=await r.json();
-
-const pairs=(j.pairs||[]).slice(0,8);
-
-if(!pairs.length){
-
-$("searchResults").innerHTML="No token found.";
-
-return;
-
-}
-
-$("searchResults").innerHTML=pairs.map((p,i)=>`
-
-<div class="admin-item">
-
-<div>
-
-<b>${esc(p.baseToken?.name||"Unknown")}</b>
-
-(${esc(p.baseToken?.symbol||"")})
-
-<div class="symbol">
-
-${esc(p.chainId)} •
-${esc(p.dexId||"")} •
-${esc(p.baseToken?.address||"")}
-
-</div>
-
-</div>
-
-<button
-class="btn primary"
-type="button"
-onclick="publishToken(${i})">
-
-Publish
-
-</button>
-
-</div>
-
-`).join("");
-
-window.adminPairs=pairs;
-
-}catch(e){
-
-$("searchResults").innerHTML=
-"Search failed: "+esc(e.message);
-
-}
-
-});
-
-window.publishToken=async function(i){
-
-const p=window.adminPairs?.[i];
-
-if(!p)return;
-
-const category=prompt(
-"Category: trading or holding",
-"trading"
-);
-
-if(
-!category||
-!["trading","holding"].includes(category.toLowerCase())
-)return;
-
-const note=prompt("Optional note","");
-
-const {data:{user}}=await sb.auth.getUser();
-
-if(!user){
-
-alert("Please login again.");
-
-return;
-
-}
-
-const {error}=await sb
-.from("published_tokens")
-.insert({
-
-chain_id:p.chainId,
-
-token_address:p.baseToken.address,
-
-symbol:p.baseToken.symbol,
-
-name:p.baseToken.name,
-
-category:category.toLowerCase(),
-
-note:note||null,
-
-pair_address:p.pairAddress||null,
-
-dex_id:p.dexId||null,
-
-active:true,
-
-published_by:user.id
-
-});
-
-if(error){
-
-alert("Publish failed: "+error.message);
-
-return;
-
-}
-
-alert("Token published successfully.");
-
-await loadTokens();
-
-};
-
-sb.auth.onAuthStateChange((_event,session)=>{
-
-if(session){
-
-$("loginArea").style.display="none";
-
-$("adminArea").style.display="block";
-
-}
-
-});
-
-loadTokens().catch(e=>
-console.error("TokenScope load error:",e)
-);
-
-setInterval(()=>
-loadTokens().catch(e=>
-console.error("TokenScope refresh error:",e)
-),60000);
+    });
 
 </script>
 
