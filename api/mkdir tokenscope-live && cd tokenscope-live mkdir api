@@ -1,0 +1,4 @@
+https://tokenscope-live.vercel.app
+API: https://tokenscope-live.vercel.app/api/search-token?q=SHIB
+API: https://tokenscope-live.vercel.app/api/verify?token=So1111...
+API: https://tokenscope-live.vercel.app/api/points?userId=123&action=balance
