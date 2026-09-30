@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TokenScope — Crypto Token Analyzer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TokenScope — Crypto Token Intelligence</title>
 
   <style>
     * {
@@ -13,16 +13,17 @@
     }
 
     :root {
-      --bg: #07090d;
-      --panel: #0d1118;
-      --panel2: #111720;
-      --border: #202832;
-      --text: #f5f7fa;
-      --muted: #8c97a6;
-      --green: #36d98b;
-      --red: #ff5d6c;
-      --blue: #4c8dff;
-      --yellow: #f2c94c;
+      --bg: #05070b;
+      --panel: #0b0f16;
+      --panel2: #10151e;
+      --border: #1c2430;
+      --text: #f4f7fb;
+      --muted: #8993a3;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #4f8cff;
+      --yellow: #f5c542;
+      --radius: 16px;
     }
 
     body {
@@ -30,6 +31,7 @@
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       min-height: 100vh;
+      padding-bottom: 82px;
     }
 
     button,
@@ -42,251 +44,273 @@
       cursor: pointer;
     }
 
-    .app {
-      min-height: 100vh;
+    .hidden {
+      display: none !important;
     }
+
+    .app {
+      width: 100%;
+      max-width: 1180px;
+      margin: auto;
+    }
+
+    /* HEADER */
 
     header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(7, 9, 13, .94);
-      backdrop-filter: blur(15px);
+      background: rgba(5, 7, 11, 0.94);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
     }
 
     .header-inner {
-      max-width: 1250px;
+      max-width: 1180px;
       margin: auto;
-      padding: 14px 18px;
+      padding: 15px 18px;
       display: flex;
       align-items: center;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 170px;
+      gap: 14px;
     }
 
     .logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
-      background: linear-gradient(135deg, #ffffff, #687384);
-      color: #07090d;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: max-content;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4f8cff, #7c3aed);
       display: grid;
       place-items: center;
       font-weight: 900;
+    }
+
+    .logo-text {
       font-size: 18px;
-    }
-
-    .brand-text {
-      font-size: 19px;
       font-weight: 800;
-      letter-spacing: -.4px;
+      letter-spacing: -0.4px;
     }
 
-    .brand-text span {
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .top-search {
+    .header-search {
       flex: 1;
       position: relative;
     }
 
-    .top-search input {
+    .header-search input {
       width: 100%;
       background: var(--panel);
-      color: var(--text);
       border: 1px solid var(--border);
+      color: var(--text);
       border-radius: 12px;
-      padding: 12px 45px 12px 15px;
+      padding: 11px 14px 11px 40px;
       outline: none;
     }
 
-    .top-search input:focus {
-      border-color: #3b4655;
+    .header-search input:focus {
+      border-color: var(--blue);
     }
 
     .search-icon {
       position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
+      left: 14px;
+      top: 11px;
       color: var(--muted);
     }
 
-    .header-btn {
+    .icon-button {
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
-      border-radius: 10px;
-      padding: 10px 13px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
     }
+
+    /* MAIN */
 
     main {
-      max-width: 1250px;
-      margin: auto;
-      padding: 22px 18px 90px;
+      padding: 24px 18px 30px;
     }
 
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-title {
+      font-size: 25px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    /* HERO */
+
     .hero {
-      padding: 22px 0 18px;
+      background:
+        radial-gradient(circle at top right, rgba(79, 140, 255, .17), transparent 35%),
+        var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 25px;
+      margin-bottom: 20px;
     }
 
     .hero h1 {
-      font-size: clamp(28px, 5vw, 44px);
-      line-height: 1.05;
-      margin-bottom: 10px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      max-width: 700px;
-      line-height: 1.6;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 10px 0 18px;
-    }
-
-    .tab {
-      white-space: nowrap;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--muted);
-      border-radius: 10px;
-      padding: 10px 14px;
-    }
-
-    .tab.active {
-      background: #171d26;
-      color: var(--text);
-      border-color: #394453;
-    }
-
-    .search-box {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 18px;
-    }
-
-    .search-box h2 {
-      font-size: 17px;
-      margin-bottom: 8px;
-    }
-
-    .search-box p {
-      color: var(--muted);
-      font-size: 13px;
+      font-size: clamp(27px, 5vw, 42px);
+      line-height: 1.1;
       margin-bottom: 12px;
     }
 
-    .search-row {
-      display: flex;
-      gap: 9px;
+    .hero p {
+      max-width: 680px;
+      color: var(--muted);
+      line-height: 1.65;
     }
 
-    .search-row input {
+    /* SEARCH */
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
       flex: 1;
       min-width: 0;
-      background: #080b10;
+      background: var(--panel);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 13px;
-      border-radius: 10px;
+      padding: 14px;
+      border-radius: 13px;
       outline: none;
     }
 
-    .primary {
-      background: var(--text);
-      color: #080a0e;
+    .primary-button,
+    .secondary-button,
+    .danger-button {
       border: 0;
-      border-radius: 10px;
-      padding: 0 18px;
-      font-weight: 800;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
     }
 
-    .filters {
+    .primary-button {
+      background: var(--blue);
+      color: white;
+    }
+
+    .secondary-button {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .danger-button {
+      background: rgba(239, 68, 68, .12);
+      color: #ff7777;
+      border: 1px solid rgba(239, 68, 68, .25);
+    }
+
+    /* FILTERS */
+
+    .filter-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 17px;
+      margin-bottom: 22px;
+    }
+
+    .filter-title {
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .filter-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      margin-bottom: 18px;
     }
 
-    .filter {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .filter label {
+    .field label {
       display: block;
       color: var(--muted);
-      font-size: 11px;
-      margin-bottom: 7px;
+      font-size: 12px;
+      margin-bottom: 6px;
     }
 
-    .filter select,
-    .filter input {
+    .field select,
+    .field input {
       width: 100%;
-      background: transparent;
+      background: #080c12;
       color: var(--text);
-      border: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
       outline: none;
     }
 
-    .section-head {
+    .filter-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 13px;
+    }
+
+    /* TOKEN CARDS */
+
+    .section-heading {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin: 25px 0 12px;
-      gap: 10px;
     }
 
-    .section-head h2 {
-      font-size: 19px;
+    .section-heading h2 {
+      font-size: 18px;
     }
 
-    .section-head span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .tokens {
+    .token-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 13px;
     }
 
     .token-card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 15px;
-      transition: .2s;
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: .18s ease;
     }
 
     .token-card:hover {
-      border-color: #394453;
-      transform: translateY(-2px);
+      border-color: #35445a;
+      transform: translateY(-1px);
     }
 
     .token-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       margin-bottom: 16px;
     }
 
@@ -296,11 +320,11 @@
       gap: 10px;
     }
 
-    .coin {
-      width: 40px;
-      height: 40px;
+    .token-avatar {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      background: #202733;
+      background: #182130;
       display: grid;
       place-items: center;
       font-weight: 800;
@@ -308,242 +332,410 @@
 
     .token-name strong {
       display: block;
-      font-size: 14px;
     }
 
-    .token-name small {
+    .token-name span {
       color: var(--muted);
-      font-size: 11px;
+      font-size: 12px;
     }
 
-    .change {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .positive {
+    .change-up {
       color: var(--green);
+      font-weight: 800;
     }
 
-    .negative {
+    .change-down {
       color: var(--red);
+      font-weight: 800;
     }
 
-    .metrics {
+    .price {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .token-stats {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
 
-    .metric {
-      background: #090c11;
-      border-radius: 9px;
+    .stat {
+      background: #080c12;
+      border-radius: 10px;
       padding: 9px;
     }
 
-    .metric small {
+    .stat span {
       display: block;
       color: var(--muted);
       font-size: 10px;
       margin-bottom: 4px;
     }
 
-    .metric strong {
+    .stat strong {
       font-size: 12px;
     }
 
-    .score-box {
-      margin-top: 12px;
-      padding: 11px;
-      border-radius: 10px;
-      background: #111820;
+    .score-row {
+      margin-top: 14px;
+      padding-top: 13px;
+      border-top: 1px solid var(--border);
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
     }
 
     .score {
-      font-size: 20px;
       font-weight: 900;
-    }
-
-    .score-label {
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .empty {
-      padding: 40px 20px;
-      text-align: center;
-      border: 1px dashed var(--border);
-      border-radius: 16px;
-      color: var(--muted);
-    }
-
-    .analyzer {
-      display: none;
-    }
-
-    .analyzer.active {
-      display: block;
-    }
-
-    .result-header {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 12px;
-    }
-
-    .result-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .result-title .coin {
-      width: 50px;
-      height: 50px;
-    }
-
-    .status {
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .status.pending {
-      background: #151a21;
-      color: var(--muted);
-    }
-
-    .status.match {
-      background: rgba(54, 217, 139, .08);
       color: var(--green);
     }
 
-    .status.no-match {
-      background: rgba(255, 93, 108, .08);
-      color: var(--red);
+    .watch-button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    .watch-button.active {
+      color: var(--yellow);
+    }
+
+    /* ANALYZER */
+
+    .analyzer-result {
+      display: none;
+    }
+
+    .analyzer-result.visible {
+      display: block;
+    }
+
+    .match-banner {
+      padding: 14px;
+      border-radius: 13px;
+      margin-bottom: 15px;
+      font-weight: 800;
+    }
+
+    .match {
+      background: rgba(34, 197, 94, .1);
+      border: 1px solid rgba(34, 197, 94, .25);
+      color: var(--green);
+    }
+
+    .not-match {
+      background: rgba(245, 197, 66, .08);
+      border: 1px solid rgba(245, 197, 66, .25);
+      color: var(--yellow);
     }
 
     .analysis-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 12px;
+      gap: 14px;
     }
 
     .panel {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
+      border-radius: var(--radius);
+      padding: 18px;
     }
 
     .panel h3 {
-      font-size: 15px;
-      margin-bottom: 14px;
+      margin-bottom: 15px;
     }
 
-    .chart-placeholder {
-      height: 280px;
-      border-radius: 12px;
-      background:
-        linear-gradient(transparent 95%, #202832 95%),
-        linear-gradient(90deg, transparent 95%, #202832 95%);
-      background-size: 40px 40px;
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      background: #080c12;
+      padding: 13px;
+      border-radius: 11px;
+    }
+
+    .metric small {
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      font-size: 15px;
+    }
+
+    .score-big {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--green);
+      margin: 10px 0;
+    }
+
+    /* MENU */
+
+    .menu-profile {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 15px;
+    }
+
+    .profile-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f8cff, #7c3aed);
       display: grid;
       place-items: center;
-      color: var(--muted);
-      border: 1px solid var(--border);
+      font-weight: 900;
     }
 
-    .analysis-list {
+    .menu-list {
       display: grid;
       gap: 8px;
     }
 
-    .analysis-item {
+    .menu-item {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 13px;
+      padding: 15px;
       display: flex;
+      align-items: center;
+      gap: 13px;
+      text-align: left;
+    }
+
+    .menu-item:hover {
+      border-color: #3a4a61;
+      background: var(--panel2);
+    }
+
+    .menu-icon {
+      width: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .menu-arrow {
+      margin-left: auto;
+      color: var(--muted);
+    }
+
+    /* SETTINGS */
+
+    .setting-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 13px;
+      overflow: hidden;
+    }
+
+    .setting-section h3 {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-row {
+      padding: 15px 16px;
+      display: flex;
+      align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 10px;
-      background: #090c11;
-      border-radius: 9px;
-      font-size: 12px;
+      gap: 15px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .analysis-item span {
-      color: var(--muted);
+    .setting-row:last-child {
+      border-bottom: 0;
     }
 
-    .notice {
-      margin-top: 12px;
+    .setting-info strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .setting-info span {
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.6;
+      line-height: 1.4;
     }
+
+    .toggle {
+      width: 48px;
+      height: 27px;
+      border-radius: 20px;
+      border: 0;
+      background: #263142;
+      position: relative;
+    }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      background: white;
+      left: 3px;
+      top: 3px;
+      transition: .2s;
+    }
+
+    .toggle.on {
+      background: var(--blue);
+    }
+
+    .toggle.on::after {
+      left: 24px;
+    }
+
+    /* EXPLAINED */
+
+    .info-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 19px;
+      margin-bottom: 12px;
+    }
+
+    .info-card h3 {
+      margin-bottom: 9px;
+    }
+
+    .info-card p,
+    .info-card li {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .info-card ul {
+      padding-left: 20px;
+    }
+
+    /* SUPPORT */
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background: #080c12;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 13px;
+      outline: none;
+      resize: vertical;
+    }
+
+    /* EMPTY */
+
+    .empty {
+      text-align: center;
+      padding: 55px 20px;
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    .empty-icon {
+      font-size: 38px;
+      margin-bottom: 12px;
+    }
+
+    .empty h3 {
+      margin-bottom: 7px;
+    }
+
+    .empty p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* TOAST */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%) translateY(20px);
+      background: #161d28;
+      border: 1px solid #303b4b;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s;
+      z-index: 100;
+      max-width: calc(100% - 30px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* BOTTOM NAV */
 
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: 100;
-      background: rgba(7, 9, 13, .96);
+      z-index: 60;
+      background: rgba(7, 10, 15, .97);
       border-top: 1px solid var(--border);
       backdrop-filter: blur(15px);
     }
 
-    .bottom-inner {
+    .nav-inner {
       max-width: 700px;
       margin: auto;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
     }
 
-    .nav-btn {
-      border: 0;
+    .nav-button {
       background: transparent;
       color: var(--muted);
-      padding: 10px 4px;
-      font-size: 10px;
+      border: 0;
+      padding: 11px 4px 9px;
+      font-size: 11px;
     }
 
-    .nav-btn.active {
-      color: var(--text);
-    }
-
-    .nav-icon {
+    .nav-button .nav-icon {
       display: block;
-      font-size: 17px;
-      margin-bottom: 4px;
+      font-size: 19px;
+      margin-bottom: 3px;
     }
 
-    .toast {
-      position: fixed;
-      right: 18px;
-      bottom: 78px;
-      background: #171d25;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 15px;
-      border-radius: 10px;
-      display: none;
-      z-index: 200;
-      font-size: 13px;
-      max-width: 320px;
+    .nav-button.active {
+      color: var(--blue);
     }
 
-    @media (max-width: 900px) {
-      .tokens {
+    /* RESPONSIVE */
+
+    @media (max-width: 850px) {
+      .token-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .filters {
+      .filter-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
@@ -554,40 +746,43 @@
 
     @media (max-width: 620px) {
       .header-inner {
-        flex-wrap: wrap;
+        padding: 11px 12px;
       }
 
-      .brand {
-        min-width: auto;
-      }
-
-      .top-search {
-        order: 3;
-        flex-basis: 100%;
+      .logo-text {
+        display: none;
       }
 
       main {
-        padding: 15px 12px 85px;
+        padding: 18px 12px 25px;
       }
 
-      .tokens {
+      .hero {
+        padding: 19px;
+      }
+
+      .token-grid {
         grid-template-columns: 1fr;
       }
 
-      .filters {
-        grid-template-columns: 1fr 1fr;
+      .filter-grid {
+        grid-template-columns: 1fr;
       }
 
-      .search-row {
+      .search-box {
         flex-direction: column;
       }
 
-      .primary {
-        height: 45px;
+      .search-box button {
+        width: 100%;
       }
 
-      .hero h1 {
-        font-size: 30px;
+      .header-search {
+        min-width: 0;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr 1fr;
       }
     }
   </style>
@@ -595,560 +790,1424 @@
 
 <body>
 
-<div class="app">
+<header>
+  <div class="header-inner">
 
-  <header>
-    <div class="header-inner">
-
-      <div class="brand">
-        <div class="logo">TS</div>
-        <div class="brand-text">
-          TokenScope <span>Analyzer</span>
-        </div>
-      </div>
-
-      <div class="top-search">
-        <input
-          id="globalSearch"
-          type="text"
-          placeholder="Search token, symbol or contract address..."
-          autocomplete="off"
-        >
-        <div class="search-icon">⌕</div>
-      </div>
-
-      <button class="header-btn" onclick="showNotice('Account system will be connected next.')">
-        Account
-      </button>
-
+    <div class="logo">
+      <div class="logo-mark">TS</div>
+      <div class="logo-text">TokenScope</div>
     </div>
-  </header>
+
+    <div class="header-search">
+      <span class="search-icon">⌕</span>
+      <input
+        id="globalSearch"
+        type="text"
+        placeholder="Search token or contract address..."
+        autocomplete="off"
+      />
+    </div>
+
+    <button class="icon-button" onclick="openPage('menu')">☰</button>
+
+  </div>
+</header>
 
 
-  <main>
+<main class="app">
 
-    <section class="hero">
-      <h1>Discover. Analyze. Track.</h1>
+  <!-- SCREENER -->
+
+  <section id="page-screener" class="page active">
+
+    <div class="hero">
+      <h1>Discover tokens with TokenScope.</h1>
       <p>
-        TokenScope brings token discovery, market data, on-chain analysis,
-        security signals and wallet activity into one place.
+        Explore crypto tokens, analyze market activity and use measurable
+        on-chain and market signals to understand opportunities and risks.
       </p>
-    </section>
-
-
-    <div class="tabs">
-      <button class="tab active" onclick="switchView('screener', this)">
-        Screener
-      </button>
-
-      <button class="tab" onclick="switchView('analyzer', this)">
-        Token Analyzer
-      </button>
     </div>
 
+    <div class="section-heading">
+      <h2>Token Screener</h2>
+      <button class="secondary-button" onclick="resetFilters()">Reset</button>
+    </div>
 
-    <!-- SCREENER -->
+    <div class="filter-panel">
 
-    <section id="screenerView">
+      <div class="filter-title">Filters</div>
 
-      <div class="search-box">
-        <h2>Search & Analyze Any Token</h2>
+      <div class="filter-grid">
 
-        <p>
-          Paste a contract address or search by token name/symbol.
-          TokenScope will analyze the token against its criteria.
-        </p>
-
-        <div class="search-row">
-          <input
-            id="analyzerInput"
-            type="text"
-            placeholder="Enter token name, symbol or contract address..."
-          >
-
-          <button class="primary" onclick="analyzeToken()">
-            Analyze
-          </button>
-        </div>
-      </div>
-
-
-      <div class="filters">
-
-        <div class="filter">
-          <label>CHAIN</label>
+        <div class="field">
+          <label>Chain</label>
           <select id="chainFilter">
-            <option>All Chains</option>
-            <option>Ethereum</option>
-            <option>Solana</option>
-            <option>Base</option>
-            <option>Arbitrum</option>
-            <option>BSC</option>
+            <option value="all">All Chains</option>
+            <option value="Solana">Solana</option>
+            <option value="Ethereum">Ethereum</option>
+            <option value="Base">Base</option>
+            <option value="Arbitrum">Arbitrum</option>
           </select>
         </div>
 
-        <div class="filter">
-          <label>MIN LIQUIDITY</label>
-          <input id="liquidityFilter" type="number" placeholder="$0">
+        <div class="field">
+          <label>Min Liquidity</label>
+          <input id="liquidityFilter" type="number" placeholder="0" />
         </div>
 
-        <div class="filter">
-          <label>MIN VOLUME</label>
-          <input id="volumeFilter" type="number" placeholder="$0">
+        <div class="field">
+          <label>Min Volume</label>
+          <input id="volumeFilter" type="number" placeholder="0" />
         </div>
 
-        <div class="filter">
-          <label>MIN MARKET CAP</label>
-          <input id="marketFilter" type="number" placeholder="$0">
-        </div>
-
-      </div>
-
-
-      <div class="section-head">
-        <h2>TokenScope Discovery</h2>
-        <span id="scannerStatus">Automatic discovery engine</span>
-      </div>
-
-
-      <div id="tokenGrid" class="tokens">
-
-        <div class="empty">
-          <strong>Discovery engine ready</strong>
-          <br><br>
-          Real token discovery data will appear here after the
-          TokenScope data engine is connected.
+        <div class="field">
+          <label>Min Market Cap</label>
+          <input id="marketCapFilter" type="number" placeholder="0" />
         </div>
 
       </div>
 
-    </section>
-
-
-    <!-- ANALYZER -->
-
-    <section id="analyzerView" class="analyzer">
-
-      <div class="section-head">
-        <h2>Token Analyzer</h2>
-        <span>Evidence-based analysis</span>
+      <div class="filter-actions">
+        <button class="primary-button" onclick="applyFilters()">
+          Apply Filters
+        </button>
       </div>
 
+    </div>
 
-      <div class="result-header">
+    <div class="section-heading">
+      <h2>Discovery</h2>
+      <span id="discoveryCount" style="color:var(--muted);font-size:13px;">
+        0 tokens
+      </span>
+    </div>
 
-        <div class="result-title">
-          <div class="coin" id="resultCoin">TS</div>
+    <div id="tokenGrid" class="token-grid"></div>
 
-          <div>
-            <h2 id="resultName">No token selected</h2>
-            <small id="resultAddress" style="color:#8c97a6;">
-              Search a token to begin analysis
-            </small>
-          </div>
-        </div>
+  </section>
 
-        <div id="resultStatus" class="status pending">
-          Waiting for token analysis.
-        </div>
 
+  <!-- SEARCH -->
+
+  <section id="page-search" class="page">
+
+    <div class="page-title">Token Search</div>
+
+    <div class="page-subtitle">
+      Search by token name, symbol or contract address.
+    </div>
+
+    <div class="search-box">
+      <input
+        id="tokenSearchInput"
+        type="text"
+        placeholder="Paste contract address or enter token name..."
+      />
+      <button class="primary-button" onclick="searchToken()">
+        Search
+      </button>
+    </div>
+
+    <div id="searchResult">
+
+      <div class="empty">
+        <div class="empty-icon">🔎</div>
+        <h3>Search any token</h3>
+        <p>
+          TokenScope will return available information even when a token
+          does not match the TokenScope Analyzer criteria.
+        </p>
       </div>
 
+    </div>
+
+  </section>
+
+
+  <!-- SCORE -->
+
+  <section id="page-score" class="page">
+
+    <div class="page-title">TokenScope Score</div>
+
+    <div class="page-subtitle">
+      A measurable framework for understanding token quality and market
+      conditions. The score is not financial advice and does not guarantee
+      future performance.
+    </div>
+
+    <div class="info-card">
+      <h3>📊 Market Activity</h3>
+      <p>
+        TokenScope can consider liquidity, trading volume, price activity,
+        market capitalization and other measurable market conditions.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>⛓️ On-chain Activity</h3>
+      <p>
+        Where supported by the data sources, TokenScope can examine holders,
+        transactions, wallet activity, liquidity movements and other
+        blockchain signals.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>🔐 Security & Risk</h3>
+      <p>
+        Security signals can include contract controls, holder concentration,
+        liquidity conditions and other available security information.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>🧠 Why the Score?</h3>
+      <p>
+        TokenScope is designed so that the score can be explained using the
+        underlying measurable signals rather than being a random number.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- WATCHLIST -->
+
+  <section id="page-watchlist" class="page">
+
+    <div class="page-title">Watchlist</div>
+
+    <div class="page-subtitle">
+      Keep tokens you want to monitor in one place.
+    </div>
+
+    <div id="watchlistGrid"></div>
+
+  </section>
+
+
+  <!-- MENU -->
+
+  <section id="page-menu" class="page">
+
+    <div class="page-title">Menu</div>
+
+    <div class="page-subtitle">
+      Manage your TokenScope account and platform preferences.
+    </div>
+
+    <div class="menu-profile">
+
+      <div class="profile-avatar">TS</div>
+
+      <div>
+        <strong id="menuUserName">TokenScope User</strong>
+        <div style="color:var(--muted);font-size:12px;">
+          Account
+        </div>
+      </div>
+
+    </div>
+
+    <div class="menu-list">
+
+      <button class="menu-item" onclick="openPage('alerts')">
+        <span class="menu-icon">🔔</span>
+        <span>
+          <strong>Alerts Settings</strong><br>
+          <small style="color:var(--muted)">Manage token alerts</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="openPage('explained')">
+        <span class="menu-icon">🧠</span>
+        <span>
+          <strong>TokenScope Score Explained</strong><br>
+          <small style="color:var(--muted)">Understand the scoring system</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="openPage('watchlist')">
+        <span class="menu-icon">⭐</span>
+        <span>
+          <strong>Watchlist</strong><br>
+          <small style="color:var(--muted)">Your saved tokens</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="openPage('settings')">
+        <span class="menu-icon">⚙️</span>
+        <span>
+          <strong>Settings</strong><br>
+          <small style="color:var(--muted)">Account and preferences</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="openPage('support')">
+        <span class="menu-icon">💬</span>
+        <span>
+          <strong>Help & Support</strong><br>
+          <small style="color:var(--muted)">Get help with TokenScope</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="openPage('about')">
+        <span class="menu-icon">ℹ️</span>
+        <span>
+          <strong>About TokenScope</strong><br>
+          <small style="color:var(--muted)">Our mission and purpose</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="showCommunity()">
+        <span class="menu-icon">🌐</span>
+        <span>
+          <strong>Community</strong><br>
+          <small style="color:var(--muted)">Telegram, X and Discord</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+      <button class="menu-item" onclick="logoutUser()">
+        <span class="menu-icon">↪</span>
+        <span>
+          <strong>Logout</strong><br>
+          <small style="color:var(--muted)">Sign out of this device</small>
+        </span>
+        <span class="menu-arrow">›</span>
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- SETTINGS -->
+
+  <section id="page-settings" class="page">
+
+    <div class="page-title">Settings</div>
+
+    <div class="page-subtitle">
+      Customize your TokenScope experience.
+    </div>
+
+    <div class="setting-section">
+
+      <h3>Appearance</h3>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Dark Mode</strong>
+          <span>Use TokenScope's dark interface.</span>
+        </div>
+        <button
+          id="darkToggle"
+          class="toggle on"
+          onclick="toggleSetting(this, 'darkMode')">
+        </button>
+      </div>
+
+    </div>
+
+    <div class="setting-section">
+
+      <h3>Notifications</h3>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Token Alerts</strong>
+          <span>Allow TokenScope alerts when available.</span>
+        </div>
+        <button
+          id="notificationToggle"
+          class="toggle"
+          onclick="toggleSetting(this, 'notifications')">
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Security Alerts</strong>
+          <span>Receive security-related notifications.</span>
+        </div>
+        <button
+          id="securityToggle"
+          class="toggle"
+          onclick="toggleSetting(this, 'securityAlerts')">
+        </button>
+      </div>
+
+    </div>
+
+    <div class="setting-section">
+
+      <h3>Account</h3>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Authentication</strong>
+          <span>Account authentication will use TokenScope's secure auth system.</span>
+        </div>
+        <button class="secondary-button" onclick="showToast('Account authentication will be connected to Supabase Auth.')">
+          Manage
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ALERTS -->
+
+  <section id="page-alerts" class="page">
+
+    <div class="page-title">Alerts Settings</div>
+
+    <div class="page-subtitle">
+      Configure the types of TokenScope events you want to monitor.
+    </div>
+
+    <div class="setting-section">
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Liquidity Changes</strong>
+          <span>Monitor significant liquidity changes.</span>
+        </div>
+        <button
+          class="toggle"
+          onclick="toggleSetting(this, 'liquidityAlerts')">
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Whale Activity</strong>
+          <span>Monitor significant wallet activity where data is available.</span>
+        </div>
+        <button
+          class="toggle"
+          onclick="toggleSetting(this, 'whaleAlerts')">
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <strong>Security Changes</strong>
+          <span>Monitor available contract and security signals.</span>
+        </div>
+        <button
+          class="toggle"
+          onclick="toggleSetting(this, 'securityChanges')">
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- EXPLAINED -->
+
+  <section id="page-explained" class="page">
+
+    <div class="page-title">How TokenScope Works</div>
+
+    <div class="page-subtitle">
+      TokenScope is designed to bring market, blockchain and security
+      information together so users can investigate tokens more efficiently.
+    </div>
+
+    <div class="info-card">
+      <h3>1. Discovery</h3>
+      <p>
+        TokenScope can scan supported data sources and identify tokens that
+        meet configured measurable criteria.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>2. Search</h3>
+      <p>
+        Users can search for a token by name, symbol or contract address.
+        A token can still be displayed even when it does not meet the
+        discovery criteria.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>3. Analyzer</h3>
+      <p>
+        The Analyzer combines available market, on-chain, holder,
+        liquidity, wallet, security and other relevant information.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>4. TokenScope Score</h3>
+      <p>
+        The score is intended to summarize measurable signals. TokenScope
+        should explain the factors contributing to the score rather than
+        hiding the reasoning.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>5. Evidence First</h3>
+      <p>
+        TokenScope should present available evidence and risk indicators.
+        It should not label a token a scam without sufficient evidence.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- SUPPORT -->
+
+  <section id="page-support" class="page">
+
+    <div class="page-title">Help & Support</div>
+
+    <div class="page-subtitle">
+      Need help with TokenScope? Use the support form below.
+    </div>
+
+    <div class="panel">
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>Subject</label>
+        <input
+          id="supportSubject"
+          type="text"
+          placeholder="What do you need help with?"
+        />
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>Message</label>
+        <textarea
+          id="supportMessage"
+          placeholder="Describe the problem or question..."></textarea>
+      </div>
+
+      <button class="primary-button" onclick="submitSupport()">
+        Submit Support Request
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ABOUT -->
+
+  <section id="page-about" class="page">
+
+    <div class="page-title">About TokenScope</div>
+
+    <div class="page-subtitle">
+      Crypto token intelligence designed to reduce the amount of manual
+      research required before making an informed decision.
+    </div>
+
+    <div class="info-card">
+      <h3>Our Mission</h3>
+      <p>
+        TokenScope brings token discovery, market information, blockchain
+        activity, security signals and tracking tools into one platform.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>Independent Analysis</h3>
+      <p>
+        TokenScope is designed to provide information and analysis tools.
+        It does not guarantee profits or future token performance.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>Not Financial Advice</h3>
+      <p>
+        Information displayed by TokenScope is for research and educational
+        purposes. Users remain responsible for their own decisions.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>Version</h3>
+      <p>
+        TokenScope development build.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- COMMUNITY -->
+
+  <section id="page-community" class="page">
+
+    <div class="page-title">TokenScope Community</div>
+
+    <div class="page-subtitle">
+      Follow TokenScope through the official community channels.
+    </div>
+
+    <div class="menu-list">
+
+      <button class="menu-item" onclick="openCommunityLink('telegram')">
+        <span class="menu-icon">✈️</span>
+        <span>
+          <strong>Telegram</strong><br>
+          <small style="color:var(--muted)">Official TokenScope community</small>
+        </span>
+        <span class="menu-arrow">↗</span>
+      </button>
+
+      <button class="menu-item" onclick="openCommunityLink('twitter')">
+        <span class="menu-icon">𝕏</span>
+        <span>
+          <strong>Twitter / X</strong><br>
+          <small style="color:var(--muted)">TokenScope updates</small>
+        </span>
+        <span class="menu-arrow">↗</span>
+      </button>
+
+      <button class="menu-item" onclick="openCommunityLink('discord')">
+        <span class="menu-icon">◉</span>
+        <span>
+          <strong>Discord</strong><br>
+          <small style="color:var(--muted)">TokenScope community</small>
+        </span>
+        <span class="menu-arrow">↗</span>
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ANALYZER -->
+
+  <section id="page-analyzer" class="page">
+
+    <div class="page-title">Token Analyzer</div>
+
+    <div class="page-subtitle">
+      Search and investigate a token using its name, symbol or contract address.
+    </div>
+
+    <div class="search-box">
+      <input
+        id="analyzerInput"
+        type="text"
+        placeholder="Paste contract address..."
+      />
+      <button class="primary-button" onclick="runAnalyzer()">
+        Analyze
+      </button>
+    </div>
+
+    <div id="analyzerResult" class="analyzer-result">
+
+      <div id="matchBanner" class="match-banner"></div>
 
       <div class="analysis-grid">
 
         <div class="panel">
-          <h3>Price Chart</h3>
 
-          <div class="chart-placeholder">
-            Real-time chart will connect to the data engine.
+          <h3 id="analyzerTokenName">Token</h3>
+
+          <div class="metric-grid">
+
+            <div class="metric">
+              <small>Price</small>
+              <strong id="aPrice">—</strong>
+            </div>
+
+            <div class="metric">
+              <small>24h Change</small>
+              <strong id="aChange">—</strong>
+            </div>
+
+            <div class="metric">
+              <small>Liquidity</small>
+              <strong id="aLiquidity">—</strong>
+            </div>
+
+            <div class="metric">
+              <small>Volume</small>
+              <strong id="aVolume">—</strong>
+            </div>
+
+            <div class="metric">
+              <small>Market Cap</small>
+              <strong id="aMarketCap">—</strong>
+            </div>
+
+            <div class="metric">
+              <small>Chain</small>
+              <strong id="aChain">—</strong>
+            </div>
+
           </div>
 
-          <p class="notice">
-            TokenScope will use market and blockchain sources to populate
-            this chart when the real data adapter is connected.
+        </div>
+
+        <div class="panel">
+
+          <h3>TokenScope Score</h3>
+
+          <div id="aScore" class="score-big">—</div>
+
+          <p id="scoreReason" style="color:var(--muted);line-height:1.55;">
+            Score explanation will be based on measurable signals returned
+            by the real analysis engine.
           </p>
-        </div>
-
-
-        <div class="panel">
-
-          <h3>Market Data</h3>
-
-          <div class="analysis-list">
-
-            <div class="analysis-item">
-              <span>Price</span>
-              <strong id="rPrice">—</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>24h Change</span>
-              <strong id="rChange">—</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Liquidity</span>
-              <strong id="rLiquidity">—</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>24h Volume</span>
-              <strong id="rVolume">—</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Market Cap</span>
-              <strong id="rMarketCap">—</strong>
-            </div>
-
-          </div>
 
         </div>
 
       </div>
-
-
-      <div class="analysis-grid" style="margin-top:12px;">
-
-        <div class="panel">
-
-          <h3>On-Chain Analysis</h3>
-
-          <div class="analysis-list">
-
-            <div class="analysis-item">
-              <span>Holders</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Holder Concentration</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Whale Activity</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Dev Wallet History</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Bundle Analysis</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="panel">
-
-          <h3>Security & Risk</h3>
-
-          <div class="analysis-list">
-
-            <div class="analysis-item">
-              <span>Contract</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Liquidity Status</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Ownership</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-            <div class="analysis-item">
-              <span>Mint / Freeze</span>
-              <strong>Awaiting data</strong>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="panel" style="margin-top:12px;">
-
-        <h3>TokenScope Score</h3>
-
-        <div style="display:flex;align-items:center;gap:20px;">
-
-          <div id="resultScore"
-               style="font-size:42px;font-weight:900;">
-            —
-          </div>
-
-          <div>
-            <strong>Explainable score</strong>
-
-            <p class="notice">
-              The final score will be calculated from measurable
-              TokenScope criteria such as liquidity, volume, market
-              activity, holder distribution, security signals and
-              other verified data.
-            </p>
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <nav class="bottom-nav">
-
-    <div class="bottom-inner">
-
-      <button class="nav-btn active" onclick="goHome(this)">
-        <span class="nav-icon">⌂</span>
-        Screener
-      </button>
-
-      <button class="nav-btn" onclick="focusSearch(this)">
-        <span class="nav-icon">⌕</span>
-        Search
-      </button>
-
-      <button class="nav-btn" onclick="showNotice('TokenScope Score explanation will be added.')">
-        <span class="nav-icon">◈</span>
-        Score
-      </button>
-
-      <button class="nav-btn" onclick="showNotice('Watchlist will be connected to user accounts.')">
-        <span class="nav-icon">☆</span>
-        Watchlist
-      </button>
-
-      <button class="nav-btn" onclick="showNotice('Menu and settings will be connected next.')">
-        <span class="nav-icon">☰</span>
-        Menu
-      </button>
 
     </div>
 
-  </nav>
+  </section>
+
+</main>
 
 
-  <div id="toast" class="toast"></div>
+<!-- BOTTOM NAV -->
 
-</div>
+<nav class="bottom-nav">
+
+  <div class="nav-inner">
+
+    <button class="nav-button active" data-page="screener" onclick="openPage('screener')">
+      <span class="nav-icon">▦</span>
+      Screener
+    </button>
+
+    <button class="nav-button" data-page="search" onclick="openPage('search')">
+      <span class="nav-icon">⌕</span>
+      Search
+    </button>
+
+    <button class="nav-button" data-page="score" onclick="openPage('score')">
+      <span class="nav-icon">◈</span>
+      Score
+    </button>
+
+    <button class="nav-button" data-page="watchlist" onclick="openPage('watchlist')">
+      <span class="nav-icon">☆</span>
+      Watchlist
+    </button>
+
+    <button class="nav-button" data-page="menu" onclick="openPage('menu')">
+      <span class="nav-icon">☰</span>
+      Menu
+    </button>
+
+  </div>
+
+</nav>
+
+
+<div id="toast" class="toast"></div>
 
 
 <script>
 
   /*
-   * TOKENSCOPE
-   * UI FOUNDATION
+   * TOKEN DATA
    *
-   * IMPORTANT:
-   * No fake live token data is used here.
-   * Real data adapters will be connected in the next phase.
+   * These are temporary local development records.
+   * They are NOT presented as live market data.
+   *
+   * The real discovery engine will replace this data through
+   * TokenScope backend APIs.
    */
 
+  const demoTokens = [
+    {
+      id: "demo-pepe",
+      name: "PEPE",
+      symbol: "PEPE",
+      chain: "Ethereum",
+      price: "$0.000010",
+      change: 4.82,
+      liquidity: 8200000,
+      volume: 15200000,
+      marketCap: 4200000000,
+      score: 82
+    },
+    {
+      id: "demo-wif",
+      name: "dogwifhat",
+      symbol: "WIF",
+      chain: "Solana",
+      price: "$0.62",
+      change: 2.41,
+      liquidity: 6300000,
+      volume: 12100000,
+      marketCap: 620000000,
+      score: 77
+    },
+    {
+      id: "demo-bonk",
+      name: "Bonk",
+      symbol: "BONK",
+      chain: "Solana",
+      price: "$0.000018",
+      change: -1.32,
+      liquidity: 4100000,
+      volume: 8700000,
+      marketCap: 1400000000,
+      score: 73
+    }
+  ];
 
-  function showNotice(message) {
 
-    const toast = document.getElementById("toast");
+  let watchlist =
+    JSON.parse(localStorage.getItem("tokenscope_watchlist") || "[]");
 
-    toast.textContent = message;
-    toast.style.display = "block";
+  let settings =
+    JSON.parse(localStorage.getItem("tokenscope_settings") || "{}");
 
-    clearTimeout(window.toastTimer);
 
-    window.toastTimer = setTimeout(() => {
-      toast.style.display = "none";
-    }, 3000);
+  function saveState() {
+
+    localStorage.setItem(
+      "tokenscope_watchlist",
+      JSON.stringify(watchlist)
+    );
+
+    localStorage.setItem(
+      "tokenscope_settings",
+      JSON.stringify(settings)
+    );
   }
 
 
-  function switchView(view, button) {
+  function openPage(page) {
 
-    document.querySelectorAll(".tab")
-      .forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(section => {
+      section.classList.remove("active");
+    });
 
-    button.classList.add("active");
+    const target = document.getElementById("page-" + page);
 
-    const screener = document.getElementById("screenerView");
-    const analyzer = document.getElementById("analyzerView");
-
-    if (view === "analyzer") {
-
-      screener.style.display = "none";
-      analyzer.classList.add("active");
-
-    } else {
-
-      screener.style.display = "block";
-      analyzer.classList.remove("active");
-
+    if (target) {
+      target.classList.add("active");
     }
+
+    document.querySelectorAll(".nav-button").forEach(button => {
+      button.classList.remove("active");
+
+      if (button.dataset.page === page) {
+        button.classList.add("active");
+      }
+    });
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
+
+    if (page === "watchlist") {
+      renderWatchlist();
+    }
   }
 
 
-  function analyzeToken() {
+  function formatNumber(value) {
 
-    const input =
+    if (value >= 1000000000) {
+      return "$" + (value / 1000000000).toFixed(2) + "B";
+    }
+
+    if (value >= 1000000) {
+      return "$" + (value / 1000000).toFixed(2) + "M";
+    }
+
+    if (value >= 1000) {
+      return "$" + (value / 1000).toFixed(1) + "K";
+    }
+
+    return "$" + value;
+  }
+
+
+  function tokenCard(token) {
+
+    const watched = watchlist.includes(token.id);
+
+    const changeClass =
+      token.change >= 0 ? "change-up" : "change-down";
+
+    const changeText =
+      (token.change >= 0 ? "+" : "") +
+      token.change.toFixed(2) +
+      "%";
+
+    return `
+      <article class="token-card">
+
+        <div class="token-top">
+
+          <div class="token-name">
+
+            <div class="token-avatar">
+              ${token.symbol.substring(0, 2)}
+            </div>
+
+            <div>
+              <strong>${token.name}</strong>
+              <span>${token.symbol} · ${token.chain}</span>
+            </div>
+
+          </div>
+
+          <button
+            class="watch-button ${watched ? "active" : ""}"
+            onclick="toggleWatch('${token.id}')"
+            aria-label="Watchlist">
+            ${watched ? "★" : "☆"}
+          </button>
+
+        </div>
+
+        <div class="price">${token.price}</div>
+
+        <div class="${changeClass}" style="margin-bottom:13px;">
+          ${changeText}
+        </div>
+
+        <div class="token-stats">
+
+          <div class="stat">
+            <span>Liquidity</span>
+            <strong>${formatNumber(token.liquidity)}</strong>
+          </div>
+
+          <div class="stat">
+            <span>Volume</span>
+            <strong>${formatNumber(token.volume)}</strong>
+          </div>
+
+          <div class="stat">
+            <span>Market Cap</span>
+            <strong>${formatNumber(token.marketCap)}</strong>
+          </div>
+
+        </div>
+
+        <div class="score-row">
+
+          <span>
+            TokenScope Score
+            <strong class="score">${token.score}</strong>
+          </span>
+
+          <button
+            class="secondary-button"
+            style="padding:8px 10px;font-size:11px;"
+            onclick="openDemoAnalyzer('${token.id}')">
+            Analyze
+          </button>
+
+        </div>
+
+      </article>
+    `;
+  }
+
+
+  function renderTokens(tokens = demoTokens) {
+
+    const grid = document.getElementById("tokenGrid");
+
+    document.getElementById("discoveryCount").textContent =
+      tokens.length + " tokens";
+
+    if (!tokens.length) {
+
+      grid.innerHTML = `
+        <div class="empty" style="grid-column:1/-1;">
+          <div class="empty-icon">🔎</div>
+          <h3>No tokens match these filters</h3>
+          <p>
+            Try lowering the filter values or selecting another chain.
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+    grid.innerHTML = tokens.map(tokenCard).join("");
+  }
+
+
+  function applyFilters() {
+
+    const chain =
+      document.getElementById("chainFilter").value;
+
+    const liquidity =
+      Number(document.getElementById("liquidityFilter").value || 0);
+
+    const volume =
+      Number(document.getElementById("volumeFilter").value || 0);
+
+    const marketCap =
+      Number(document.getElementById("marketCapFilter").value || 0);
+
+    const filtered = demoTokens.filter(token => {
+
+      return (
+        (chain === "all" || token.chain === chain) &&
+        token.liquidity >= liquidity &&
+        token.volume >= volume &&
+        token.marketCap >= marketCap
+      );
+
+    });
+
+    renderTokens(filtered);
+
+    showToast("Filters applied.");
+  }
+
+
+  function resetFilters() {
+
+    document.getElementById("chainFilter").value = "all";
+    document.getElementById("liquidityFilter").value = "";
+    document.getElementById("volumeFilter").value = "";
+    document.getElementById("marketCapFilter").value = "";
+
+    renderTokens();
+
+    showToast("Filters reset.");
+  }
+
+
+  function toggleWatch(id) {
+
+    if (watchlist.includes(id)) {
+
+      watchlist =
+        watchlist.filter(item => item !== id);
+
+      showToast("Removed from Watchlist.");
+
+    } else {
+
+      watchlist.push(id);
+
+      showToast("Added to Watchlist.");
+    }
+
+    saveState();
+
+    renderTokens();
+
+    renderWatchlist();
+  }
+
+
+  function renderWatchlist() {
+
+    const container =
+      document.getElementById("watchlistGrid");
+
+    const saved =
+      demoTokens.filter(token =>
+        watchlist.includes(token.id)
+      );
+
+    if (!saved.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">☆</div>
+          <h3>Your Watchlist is empty</h3>
+          <p>
+            Add tokens from the Screener and they will appear here.
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      `<div class="token-grid">${saved.map(tokenCard).join("")}</div>`;
+  }
+
+
+  function searchToken() {
+
+    const value =
+      document.getElementById("tokenSearchInput").value.trim();
+
+    if (!value) {
+
+      showToast("Enter a token name, symbol or contract address.");
+
+      return;
+    }
+
+    /*
+     * The real API will replace this local search.
+     * For now, we demonstrate the Analyzer behavior
+     * without pretending the data is live.
+     */
+
+    const found =
+      demoTokens.find(token =>
+        token.name.toLowerCase() === value.toLowerCase() ||
+        token.symbol.toLowerCase() === value.toLowerCase()
+      );
+
+    const result =
+      document.getElementById("searchResult");
+
+    if (found) {
+
+      result.innerHTML = `
+        <div class="match-banner match">
+          MATCHED WITH TOKENSCOPE ANALYZER CRITERIA
+        </div>
+
+        ${tokenCard(found)}
+      `;
+
+    } else {
+
+      result.innerHTML = `
+        <div class="match-banner not-match">
+          TOKEN FOUND IN SEARCH — NOT YET MATCHED WITH
+          TOKENSCOPE ANALYZER CRITERIA
+        </div>
+
+        <div class="empty">
+          <div class="empty-icon">🔍</div>
+          <h3>${escapeHtml(value)}</h3>
+          <p>
+            The real TokenScope backend will retrieve available token
+            information here, even when the token does not satisfy
+            discovery criteria.
+          </p>
+        </div>
+      `;
+    }
+
+  }
+
+
+  function runAnalyzer() {
+
+    const value =
       document.getElementById("analyzerInput").value.trim();
 
-    if (!input) {
+    if (!value) {
 
-      showNotice(
-        "Enter a token name, symbol or contract address first."
+      showToast("Enter a token or contract address.");
+
+      return;
+    }
+
+    const found =
+      demoTokens.find(token =>
+        token.symbol.toLowerCase() === value.toLowerCase() ||
+        token.name.toLowerCase() === value.toLowerCase()
+      );
+
+    const result =
+      document.getElementById("analyzerResult");
+
+    result.classList.add("visible");
+
+    if (found) {
+
+      document.getElementById("matchBanner").className =
+        "match-banner match";
+
+      document.getElementById("matchBanner").textContent =
+        "MATCHED WITH TOKENSCOPE ANALYZER CRITERIA";
+
+      document.getElementById("analyzerTokenName").textContent =
+        found.name + " (" + found.symbol + ")";
+
+      document.getElementById("aPrice").textContent =
+        found.price;
+
+      document.getElementById("aChange").textContent =
+        (found.change >= 0 ? "+" : "") +
+        found.change.toFixed(2) + "%";
+
+      document.getElementById("aLiquidity").textContent =
+        formatNumber(found.liquidity);
+
+      document.getElementById("aVolume").textContent =
+        formatNumber(found.volume);
+
+      document.getElementById("aMarketCap").textContent =
+        formatNumber(found.marketCap);
+
+      document.getElementById("aChain").textContent =
+        found.chain;
+
+      document.getElementById("aScore").textContent =
+        found.score;
+
+      document.getElementById("scoreReason").textContent =
+        "The current development data uses measurable demo signals. The production analyzer will calculate this from real market, on-chain and security data.";
+
+    } else {
+
+      document.getElementById("matchBanner").className =
+        "match-banner not-match";
+
+      document.getElementById("matchBanner").textContent =
+        "THIS TOKEN IS NOT MATCHED WITH TOKENSCOPE ANALYZER CRITERIA";
+
+      document.getElementById("analyzerTokenName").textContent =
+        value;
+
+      document.getElementById("aPrice").textContent = "—";
+      document.getElementById("aChange").textContent = "—";
+      document.getElementById("aLiquidity").textContent = "—";
+      document.getElementById("aVolume").textContent = "—";
+      document.getElementById("aMarketCap").textContent = "—";
+      document.getElementById("aChain").textContent = "—";
+      document.getElementById("aScore").textContent = "—";
+
+      document.getElementById("scoreReason").textContent =
+        "The real backend will still retrieve available information for this token. Not matching discovery criteria will not prevent analysis.";
+
+    }
+
+  }
+
+
+  function openDemoAnalyzer(id) {
+
+    const token =
+      demoTokens.find(item => item.id === id);
+
+    if (!token) return;
+
+    openPage("analyzer");
+
+    document.getElementById("analyzerInput").value =
+      token.symbol;
+
+    runAnalyzer();
+  }
+
+
+  function toggleSetting(button, key) {
+
+    button.classList.toggle("on");
+
+    settings[key] =
+      button.classList.contains("on");
+
+    saveState();
+
+    showToast(
+      settings[key]
+        ? "Setting enabled."
+        : "Setting disabled."
+    );
+  }
+
+
+  function loadSettings() {
+
+    const mappings = {
+      darkMode: "darkToggle",
+      notifications: "notificationToggle",
+      securityAlerts: "securityToggle"
+    };
+
+    Object.keys(mappings).forEach(key => {
+
+      const element =
+        document.getElementById(mappings[key]);
+
+      if (!element) return;
+
+      if (settings[key]) {
+        element.classList.add("on");
+      }
+
+    });
+
+  }
+
+
+  function submitSupport() {
+
+    const subject =
+      document.getElementById("supportSubject").value.trim();
+
+    const message =
+      document.getElementById("supportMessage").value.trim();
+
+    if (!subject || !message) {
+
+      showToast("Please enter a subject and message.");
+
+      return;
+    }
+
+    /*
+     * The production support system will submit this to
+     * the TokenScope support backend and create a ticket.
+     */
+
+    showToast(
+      "Support request prepared. Ticket backend will be connected next."
+    );
+
+    document.getElementById("supportSubject").value = "";
+    document.getElementById("supportMessage").value = "";
+  }
+
+
+  function showCommunity() {
+    openPage("community");
+  }
+
+
+  function openCommunityLink(type) {
+
+    /*
+     * Replace these with TokenScope's official URLs
+     * when the official community accounts are ready.
+     */
+
+    const links = {
+      telegram: "",
+      twitter: "",
+      discord: ""
+    };
+
+    if (!links[type]) {
+
+      showToast(
+        "Official TokenScope " + type + " link has not been added yet."
       );
 
       return;
     }
 
-
-    const analyzerTab =
-      document.querySelectorAll(".tab")[1];
-
-    switchView("analyzer", analyzerTab);
+    window.open(links[type], "_blank");
+  }
 
 
-    const coin =
-      document.getElementById("resultCoin");
+  function logoutUser() {
 
-    const name =
-      document.getElementById("resultName");
+    /*
+     * Real Supabase logout will be connected to the
+     * authentication layer.
+     */
 
-    const address =
-      document.getElementById("resultAddress");
-
-    const status =
-      document.getElementById("resultStatus");
-
-
-    const shortName =
-      input.length > 3
-        ? input.substring(0, 3).toUpperCase()
-        : input.toUpperCase();
-
-
-    coin.textContent = shortName;
-
-    name.textContent = input;
-
-    address.textContent =
-      input.length > 20
-        ? input.substring(0, 12) + "..." +
-          input.substring(input.length - 8)
-        : "Search request received";
-
-
-    status.className = "status pending";
-
-    status.textContent =
-      "Token found in search request. Real data analysis engine is being connected.";
-
-
-    document.getElementById("rPrice").textContent = "—";
-    document.getElementById("rChange").textContent = "—";
-    document.getElementById("rLiquidity").textContent = "—";
-    document.getElementById("rVolume").textContent = "—";
-    document.getElementById("rMarketCap").textContent = "—";
-    document.getElementById("resultScore").textContent = "—";
-
-
-    showNotice(
-      "Analyzer request created. Real data adapter comes next."
+    showToast(
+      "Authentication logout will use the TokenScope account system."
     );
-
   }
 
 
-  function focusSearch(button) {
+  function escapeHtml(value) {
 
-    document.querySelectorAll(".nav-btn")
-      .forEach(btn => btn.classList.remove("active"));
-
-    button.classList.add("active");
-
-    const input =
-      document.getElementById("analyzerInput");
-
-    input.focus();
-
-    input.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
+    return value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
 
-  function goHome(button) {
+  function showToast(message) {
 
-    document.querySelectorAll(".nav-btn")
-      .forEach(btn => btn.classList.remove("active"));
+    const toast =
+      document.getElementById("toast");
 
-    button.classList.add("active");
+    toast.textContent = message;
 
-    document.querySelectorAll(".tab")
-      .forEach(tab => tab.classList.remove("active"));
+    toast.classList.add("show");
 
-    document.querySelector(".tab").classList.add("active");
+    clearTimeout(window.__toastTimer);
 
-    document.getElementById("screenerView").style.display = "block";
+    window.__toastTimer =
+      setTimeout(() => {
 
-    document.getElementById("analyzerView")
-      .classList.remove("active");
+        toast.classList.remove("show");
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+      }, 2800);
   }
 
 
-  document
-    .getElementById("globalSearch")
-    .addEventListener("keydown", function(event) {
+  document.getElementById("globalSearch")
+    .addEventListener("keydown", event => {
 
       if (event.key === "Enter") {
 
-        const value = this.value.trim();
+        const value =
+          event.target.value.trim();
 
-        if (!value) return;
+        openPage("search");
 
-        document.getElementById("analyzerInput").value = value;
+        document.getElementById("tokenSearchInput").value =
+          value;
 
-        analyzeToken();
-
+        if (value) {
+          searchToken();
+        }
       }
 
     });
 
 
-  document
-    .getElementById("analyzerInput")
-    .addEventListener("keydown", function(event) {
+  document.getElementById("tokenSearchInput")
+    .addEventListener("keydown", event => {
 
       if (event.key === "Enter") {
-        analyzeToken();
+        searchToken();
       }
 
     });
+
+
+  document.getElementById("analyzerInput")
+    .addEventListener("keydown", event => {
+
+      if (event.key === "Enter") {
+        runAnalyzer();
+      }
+
+    });
+
+
+  renderTokens();
+  renderWatchlist();
+  loadSettings();
 
 </script>
 
