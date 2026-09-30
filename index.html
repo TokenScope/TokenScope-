@@ -2213,3 +2213,26 @@
 
 </body>
 </html>
+
+async function tokenScopeSearch(query, chain='solana'){
+  const q = String(query || '').trim();
+
+  if (!q) return [];
+
+  try {
+    const response = await fetch(
+      `/api/search-token?q=${encodeURIComponent(q)}&chain=${encodeURIComponent(chain)}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Token search failed');
+    }
+
+    return data.results || [];
+  } catch (error) {
+    console.error('TokenScope search error:', error);
+    return [];
+  }
+}
