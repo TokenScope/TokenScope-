@@ -1,1028 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TokenScope — Crypto Token Intelligence</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #05070b;
-      --panel: #0b0f16;
-      --panel2: #10151e;
-      --border: #1c2430;
-      --text: #f4f7fb;
-      --muted: #8993a3;
-      --green: #22c55e;
-      --red: #ef4444;
-      --blue: #4f8cff;
-      --yellow: #f5c542;
-      --radius: 16px;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      min-height: 100vh;
-      padding-bottom: 82px;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 1180px;
-      margin: auto;
-    }
-
-    /* HEADER */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(5, 7, 11, 0.94);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      max-width: 1180px;
-      margin: auto;
-      padding: 15px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: max-content;
-    }
-
-    .logo-mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #4f8cff, #7c3aed);
-      display: grid;
-      place-items: center;
-      font-weight: 900;
-    }
-
-    .logo-text {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-    }
-
-    .header-search {
-      flex: 1;
-      position: relative;
-    }
-
-    .header-search input {
-      width: 100%;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 11px 14px 11px 40px;
-      outline: none;
-    }
-
-    .header-search input:focus {
-      border-color: var(--blue);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 11px;
-      color: var(--muted);
-    }
-
-    .icon-button {
-      width: 40px;
-      height: 40px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-    }
-
-    /* MAIN */
-
-    main {
-      padding: 24px 18px 30px;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .page-title {
-      font-size: 25px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .page-subtitle {
-      color: var(--muted);
-      line-height: 1.55;
-      margin-bottom: 22px;
-    }
-
-    /* HERO */
-
-    .hero {
-      background:
-        radial-gradient(circle at top right, rgba(79, 140, 255, .17), transparent 35%),
-        var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 25px;
-      margin-bottom: 20px;
-    }
-
-    .hero h1 {
-      font-size: clamp(27px, 5vw, 42px);
-      line-height: 1.1;
-      margin-bottom: 12px;
-    }
-
-    .hero p {
-      max-width: 680px;
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
-    /* SEARCH */
-
-    .search-box {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .search-box input {
-      flex: 1;
-      min-width: 0;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 14px;
-      border-radius: 13px;
-      outline: none;
-    }
-
-    .primary-button,
-    .secondary-button,
-    .danger-button {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-weight: 700;
-    }
-
-    .primary-button {
-      background: var(--blue);
-      color: white;
-    }
-
-    .secondary-button {
-      background: var(--panel2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .danger-button {
-      background: rgba(239, 68, 68, .12);
-      color: #ff7777;
-      border: 1px solid rgba(239, 68, 68, .25);
-    }
-
-    /* FILTERS */
-
-    .filter-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 17px;
-      margin-bottom: 22px;
-    }
-
-    .filter-title {
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .filter-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .field label {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .field select,
-    .field input {
-      width: 100%;
-      background: #080c12;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px;
-      outline: none;
-    }
-
-    .filter-actions {
-      display: flex;
-      gap: 9px;
-      margin-top: 13px;
-    }
-
-    /* TOKEN CARDS */
-
-    .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 25px 0 12px;
-    }
-
-    .section-heading h2 {
-      font-size: 18px;
-    }
-
-    .token-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 13px;
-    }
-
-    .token-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      transition: .18s ease;
-    }
-
-    .token-card:hover {
-      border-color: #35445a;
-      transform: translateY(-1px);
-    }
-
-    .token-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .token-name {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .token-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: #182130;
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-    }
-
-    .token-name strong {
-      display: block;
-    }
-
-    .token-name span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .change-up {
-      color: var(--green);
-      font-weight: 800;
-    }
-
-    .change-down {
-      color: var(--red);
-      font-weight: 800;
-    }
-
-    .price {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .token-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .stat {
-      background: #080c12;
-      border-radius: 10px;
-      padding: 9px;
-    }
-
-    .stat span {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      margin-bottom: 4px;
-    }
-
-    .stat strong {
-      font-size: 12px;
-    }
-
-    .score-row {
-      margin-top: 14px;
-      padding-top: 13px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .score {
-      font-weight: 900;
-      color: var(--green);
-    }
-
-    .watch-button {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      font-size: 20px;
-    }
-
-    .watch-button.active {
-      color: var(--yellow);
-    }
-
-    /* ANALYZER */
-
-    .analyzer-result {
-      display: none;
-    }
-
-    .analyzer-result.visible {
-      display: block;
-    }
-
-    .match-banner {
-      padding: 14px;
-      border-radius: 13px;
-      margin-bottom: 15px;
-      font-weight: 800;
-    }
-
-    .match {
-      background: rgba(34, 197, 94, .1);
-      border: 1px solid rgba(34, 197, 94, .25);
-      color: var(--green);
-    }
-
-    .not-match {
-      background: rgba(245, 197, 66, .08);
-      border: 1px solid rgba(245, 197, 66, .25);
-      color: var(--yellow);
-    }
-
-    .analysis-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 14px;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-    }
-
-    .panel h3 {
-      margin-bottom: 15px;
-    }
-
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .metric {
-      background: #080c12;
-      padding: 13px;
-      border-radius: 11px;
-    }
-
-    .metric small {
-      color: var(--muted);
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .metric strong {
-      font-size: 15px;
-    }
-
-    .score-big {
-      font-size: 48px;
-      font-weight: 900;
-      color: var(--green);
-      margin: 10px 0;
-    }
-
-    /* MENU */
-
-    .menu-profile {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 15px;
-    }
-
-    .profile-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #4f8cff, #7c3aed);
-      display: grid;
-      place-items: center;
-      font-weight: 900;
-    }
-
-    .menu-list {
-      display: grid;
-      gap: 8px;
-    }
-
-    .menu-item {
-      width: 100%;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 13px;
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      text-align: left;
-    }
-
-    .menu-item:hover {
-      border-color: #3a4a61;
-      background: var(--panel2);
-    }
-
-    .menu-icon {
-      width: 30px;
-      text-align: center;
-      font-size: 18px;
-    }
-
-    .menu-arrow {
-      margin-left: auto;
-      color: var(--muted);
-    }
-
-    /* SETTINGS */
-
-    .setting-section {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 13px;
-      overflow: hidden;
-    }
-
-    .setting-section h3 {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .setting-row {
-      padding: 15px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .setting-row:last-child {
-      border-bottom: 0;
-    }
-
-    .setting-info strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .setting-info span {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-
-    .toggle {
-      width: 48px;
-      height: 27px;
-      border-radius: 20px;
-      border: 0;
-      background: #263142;
-      position: relative;
-    }
-
-    .toggle::after {
-      content: "";
-      position: absolute;
-      width: 21px;
-      height: 21px;
-      border-radius: 50%;
-      background: white;
-      left: 3px;
-      top: 3px;
-      transition: .2s;
-    }
-
-    .toggle.on {
-      background: var(--blue);
-    }
-
-    .toggle.on::after {
-      left: 24px;
-    }
-
-    /* EXPLAINED */
-
-    .info-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 19px;
-      margin-bottom: 12px;
-    }
-
-    .info-card h3 {
-      margin-bottom: 9px;
-    }
-
-    .info-card p,
-    .info-card li {
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
-    .info-card ul {
-      padding-left: 20px;
-    }
-
-    /* SUPPORT */
-
-    textarea {
-      width: 100%;
-      min-height: 140px;
-      background: #080c12;
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 13px;
-      outline: none;
-      resize: vertical;
-    }
-
-    /* EMPTY */
-
-    .empty {
-      text-align: center;
-      padding: 55px 20px;
-      background: var(--panel);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
-    }
-
-    .empty-icon {
-      font-size: 38px;
-      margin-bottom: 12px;
-    }
-
-    .empty h3 {
-      margin-bottom: 7px;
-    }
-
-    .empty p {
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    /* TOAST */
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 92px;
-      transform: translateX(-50%) translateY(20px);
-      background: #161d28;
-      border: 1px solid #303b4b;
-      color: white;
-      padding: 12px 16px;
-      border-radius: 12px;
-      opacity: 0;
-      pointer-events: none;
-      transition: .25s;
-      z-index: 100;
-      max-width: calc(100% - 30px);
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* BOTTOM NAV */
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 60;
-      background: rgba(7, 10, 15, .97);
-      border-top: 1px solid var(--border);
-      backdrop-filter: blur(15px);
-    }
-
-    .nav-inner {
-      max-width: 700px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    .nav-button {
-      background: transparent;
-      color: var(--muted);
-      border: 0;
-      padding: 11px 4px 9px;
-      font-size: 11px;
-    }
-
-    .nav-button .nav-icon {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 3px;
-    }
-
-    .nav-button.active {
-      color: var(--blue);
-    }
-
-    /* RESPONSIVE */
-
-    @media (max-width: 850px) {
-      .token-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .filter-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .analysis-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 620px) {
-      .header-inner {
-        padding: 11px 12px;
-      }
-
-      .logo-text {
-        display: none;
-      }
-
-      main {
-        padding: 18px 12px 25px;
-      }
-
-      .hero {
-        padding: 19px;
-      }
-
-      .token-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .filter-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .search-box {
-        flex-direction: column;
-      }
-
-      .search-box button {
-        width: 100%;
-      }
-
-      .header-search {
-        min-width: 0;
-      }
-
-      .metric-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TokenScope — Crypto Intelligence</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#07090f;
+  --panel:#0d111a;
+  --panel2:#111722;
+  --border:#1c2533;
+  --text:#f4f7fb;
+  --muted:#8c98aa;
+  --green:#27d17f;
+  --red:#ff5d6c;
+  --blue:#4d8dff;
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1200px;margin:auto;min-height:100vh;padding-bottom:80px}
+header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(7,9,15,.94);
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid var(--border);
+  padding:14px;
+}
+.top{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+}
+.logo{
+  display:flex;align-items:center;gap:9px;
+  font-weight:800;font-size:20px;
+}
+.logo-mark{
+  width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#4d8dff,#27d17f);
+  color:#fff;font-weight:900;
+}
+.status{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;color:var(--muted)
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.searchbar{
+  display:flex;gap:8px;margin-top:13px;
+}
+.searchbar input{
+  flex:1;background:var(--panel);border:1px solid var(--border);
+  color:var(--text);padding:13px;border-radius:12px;outline:none;
+}
+.searchbar input:focus{border-color:var(--blue)}
+.btn{
+  border:0;border-radius:11px;padding:0 16px;
+  background:var(--blue);color:#fff;font-weight:700;
+}
+main{padding:15px}
+.page{display:none}
+.page.active{display:block}
+.title-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:15px;gap:10px
+}
+h1{font-size:22px;margin:0}
+h2{font-size:17px;margin:0}
+.muted{color:var(--muted);font-size:13px}
+.filters{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;margin-bottom:15px;
+}
+select,.filter-input{
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);padding:11px;border-radius:10px;outline:none;
+}
+.grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;padding:14px;
+}
+.token-head{
+  display:flex;justify-content:space-between;align-items:center;
+}
+.token-name{display:flex;align-items:center;gap:10px}
+.token-logo{
+  width:40px;height:40px;border-radius:50%;
+  object-fit:cover;background:#18202d;
+}
+.symbol{font-size:12px;color:var(--muted)}
+.change.up{color:var(--green)}
+.change.down{color:var(--red)}
+.price{font-size:20px;font-weight:800;margin:14px 0}
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px
+}
+.stat{
+  background:var(--panel2);border-radius:9px;padding:9px
+}
+.stat small{display:block;color:var(--muted);font-size:10px}
+.stat strong{display:block;font-size:12px;margin-top:3px}
+.score{
+  margin-top:12px;padding:10px;border-radius:10px;
+  background:rgba(39,209,127,.08);
+  border:1px solid rgba(39,209,127,.2);
+}
+.score b{color:var(--green)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions button{
+  flex:1;padding:9px;border-radius:9px;
+  border:1px solid var(--border);
+  background:var(--panel2);color:var(--text)
+}
+.empty{
+  text-align:center;padding:45px 15px;
+  color:var(--muted)
+}
+.loading{text-align:center;padding:35px;color:var(--muted)}
+.bottom{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  background:rgba(7,9,15,.97);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:center;
+}
+.nav{
+  width:min(1200px,100%);
+  display:grid;grid-template-columns:repeat(5,1fr)
+}
+.nav button{
+  border:0;background:none;color:var(--muted);
+  padding:11px 3px;font-size:11px
+}
+.nav button.active{color:#fff}
+.nav span{display:block;font-size:18px;margin-bottom:3px}
+.menu-list{display:grid;gap:9px}
+.menu-item{
+  width:100%;text-align:left;
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);border-radius:13px;padding:15px;
+}
+.menu-item small{display:block;color:var(--muted);margin-top:4px}
+.detail-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px
+}
+.detail-box{
+  background:var(--panel);border:1px solid var(--border);
+  padding:13px;border-radius:12px
+}
+.detail-box small{display:block;color:var(--muted);font-size:11px}
+.detail-box strong{display:block;margin-top:5px}
+.badge{
+  display:inline-block;padding:5px 8px;border-radius:7px;
+  font-size:10px;font-weight:800
+}
+.match{background:rgba(39,209,127,.1);color:var(--green)}
+.nomatch{background:rgba(255,93,108,.1);color:var(--red)}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:50;display:none;padding:20px;overflow:auto
+}
+.modal.show{display:block}
+.modal-box{
+  max-width:700px;margin:30px auto;background:var(--panel);
+  border:1px solid var(--border);border-radius:17px;padding:18px
+}
+.close{
+  float:right;background:none;border:0;color:var(--muted);
+  font-size:22px
+}
+@media(max-width:700px){
+  .filters{grid-template-columns:repeat(2,1fr)}
+  .grid{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-inner">
+<div class="app">
 
+<header>
+  <div class="top">
     <div class="logo">
       <div class="logo-mark">TS</div>
-      <div class="logo-text">TokenScope</div>
+      <span>TokenScope</span>
     </div>
 
-    <div class="header-search">
-      <span class="search-icon">⌕</span>
-      <input
-        id="globalSearch"
-        type="text"
-        placeholder="Search token or contract address..."
-        autocomplete="off"
-      />
+    <div class="status">
+      <span class="dot"></span>
+      Live Engine
     </div>
+  </div>
 
-    <button class="icon-button" onclick="openPage('menu')">☰</button>
-
+  <div class="searchbar">
+    <input
+      id="searchInput"
+      placeholder="Search token name, symbol or contract address..."
+      autocomplete="off"
+    >
+    <button class="btn" onclick="searchToken()">Search</button>
   </div>
 </header>
 
+<main>
 
-<main class="app">
-
-  <!-- SCREENER -->
-
-  <section id="page-screener" class="page active">
-
-    <div class="hero">
-      <h1>Discover tokens with TokenScope.</h1>
-      <p>
-        Explore crypto tokens, analyze market activity and use measurable
-        on-chain and market signals to understand opportunities and risks.
-      </p>
+<section id="screenerPage" class="page active">
+  <div class="title-row">
+    <div>
+      <h1>Screener</h1>
+      <div class="muted">Automatically discovered market data</div>
     </div>
+    <button class="actions" style="margin:0">
+      <button onclick="loadDiscovery()">↻</button>
+    </button>
+  </div>
 
-    <div class="section-heading">
-      <h2>Token Screener</h2>
-      <button class="secondary-button" onclick="resetFilters()">Reset</button>
+  <div class="filters">
+    <select id="chainFilter">
+      <option value="all">All Chains</option>
+      <option value="solana">Solana</option>
+      <option value="ethereum">Ethereum</option>
+      <option value="base">Base</option>
+      <option value="bsc">BSC</option>
+      <option value="arbitrum">Arbitrum</option>
+    </select>
+
+    <select id="sortFilter">
+      <option value="volume">Volume</option>
+      <option value="liquidity">Liquidity</option>
+      <option value="marketCap">Market Cap</option>
+      <option value="change">24h Change</option>
+      <option value="score">TokenScope Score</option>
+    </select>
+
+    <input class="filter-input" id="minLiquidity"
+           type="number" placeholder="Min Liquidity">
+
+    <input class="filter-input" id="minVolume"
+           type="number" placeholder="Min Volume">
+  </div>
+
+  <div id="screenerStatus" class="muted"></div>
+  <div id="tokenGrid" class="grid"></div>
+</section>
+
+<section id="searchPage" class="page">
+  <div class="title-row">
+    <div>
+      <h1>Search</h1>
+      <div class="muted">Search live token data</div>
     </div>
+  </div>
 
-    <div class="filter-panel">
+  <div id="searchResults"></div>
+</section>
 
-      <div class="filter-title">Filters</div>
+<section id="scorePage" class="page">
+  <div class="title-row">
+    <div>
+      <h1>TokenScope Score</h1>
+      <div class="muted">Explainable token analysis</div>
+    </div>
+  </div>
 
-      <div class="filter-grid">
+  <div class="card">
+    <h2>How the score works</h2>
+    <p class="muted">
+      TokenScope Score is calculated from measurable market and token
+      signals. It is not a guarantee of future performance.
+    </p>
 
-        <div class="field">
-          <label>Chain</label>
-          <select id="chainFilter">
-            <option value="all">All Chains</option>
-            <option value="Solana">Solana</option>
-            <option value="Ethereum">Ethereum</option>
-            <option value="Base">Base</option>
-            <option value="Arbitrum">Arbitrum</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Min Liquidity</label>
-          <input id="liquidityFilter" type="number" placeholder="0" />
-        </div>
-
-        <div class="field">
-          <label>Min Volume</label>
-          <input id="volumeFilter" type="number" placeholder="0" />
-        </div>
-
-        <div class="field">
-          <label>Min Market Cap</label>
-          <input id="marketCapFilter" type="number" placeholder="0" />
-        </div>
-
+    <div class="detail-grid">
+      <div class="detail-box">
+        <small>Liquidity</small>
+        <strong>Market depth</strong>
       </div>
-
-      <div class="filter-actions">
-        <button class="primary-button" onclick="applyFilters()">
-          Apply Filters
-        </button>
+      <div class="detail-box">
+        <small>Volume</small>
+        <strong>Trading activity</strong>
       </div>
-
-    </div>
-
-    <div class="section-heading">
-      <h2>Discovery</h2>
-      <span id="discoveryCount" style="color:var(--muted);font-size:13px;">
-        0 tokens
-      </span>
-    </div>
-
-    <div id="tokenGrid" class="token-grid"></div>
-
-  </section>
-
-
-  <!-- SEARCH -->
-
-  <section id="page-search" class="page">
-
-    <div class="page-title">Token Search</div>
-
-    <div class="page-subtitle">
-      Search by token name, symbol or contract address.
-    </div>
-
-    <div class="search-box">
-      <input
-        id="tokenSearchInput"
-        type="text"
-        placeholder="Paste contract address or enter token name..."
-      />
-      <button class="primary-button" onclick="searchToken()">
-        Search
-      </button>
-    </div>
-
-    <div id="searchResult">
-
-      <div class="empty">
-        <div class="empty-icon">🔎</div>
-        <h3>Search any token</h3>
-        <p>
-          TokenScope will return available information even when a token
-          does not match the TokenScope Analyzer criteria.
-        </p>
+      <div class="detail-box">
+        <small>Market Data</small>
+        <strong>Price / FDV / MC</strong>
       </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- SCORE -->
-
-  <section id="page-score" class="page">
-
-    <div class="page-title">TokenScope Score</div>
-
-    <div class="page-subtitle">
-      A measurable framework for understanding token quality and market
-      conditions. The score is not financial advice and does not guarantee
-      future performance.
-    </div>
-
-    <div class="info-card">
-      <h3>📊 Market Activity</h3>
-      <p>
-        TokenScope can consider liquidity, trading volume, price activity,
-        market capitalization and other measurable market conditions.
-      </p>
-    </div>
-
-    <div class="info-card">
-      <h3>⛓️ On-chain Activity</h3>
-      <p>
-        Where supported by the data sources, TokenScope can examine holders,
-        transactions, wallet activity, liquidity movements and other
-        blockchain signals.
-      </p>
-    </div>
-
-    <div class="info-card">
-      <h3>🔐 Security & Risk</h3>
-      <p>
-        Security signals can include contract controls, holder concentration,
-        liquidity conditions and other available security information.
-      </p>
-    </div>
-
-    <div class="info-card">
-      <h3>🧠 Why the Score?</h3>
-      <p>
-        TokenScope is designed so that the score can be explained using the
-        underlying measurable signals rather than being a random number.
-      </p>
-    </div>
-
-  </section>
-
-
-  <!-- WATCHLIST -->
-
-  <section id="page-watchlist" class="page">
-
-    <div class="page-title">Watchlist</div>
-
-    <div class="page-subtitle">
-      Keep tokens you want to monitor in one place.
-    </div>
-
-    <div id="watchlistGrid"></div>
-
-  </section>
-
-
-  <!-- MENU -->
-
-  <section id="page-menu" class="page">
-
-    <div class="page-title">Menu</div>
-
-    <div class="page-subtitle">
-      Manage your TokenScope account and platform preferences.
-    </div>
-
-    <div class="menu-profile">
-
-      <div class="profile-avatar">TS</div>
-
-      <div>
-        <strong id="menuUserName">TokenScope User</strong>
-        <div style="color:var(--muted);font-size:12px;">
-          Account
-        </div>
+      <div class="detail-box">
+        <small>Risk Signals</small>
+        <strong>Contract / holder data</strong>
       </div>
-
     </div>
+  </div>
+</section>
 
-    <div class="menu-list">
+<section id="watchlistPage" class="page">
+  <div class="title-row">
+    <div>
+      <h1>Watchlist</h1>
+      <div class="muted">Tokens you are tracking</div>
+    </div>
+  </div>
 
-      <button class="menu-item" onclick="openPage('alerts')">
-        <span class="menu-icon">🔔</span>
-        <span>
-          <strong>Alerts Settings</strong><br>
-          <small style="color:var(--muted)">Manage token alerts</small>
-        </span>
-        <span class="menu-arrow">›</span>
-      </button>
+  <div id="watchlist"></div>
+</section>
 
-      <button class="menu-item" onclick="openPage('explained')">
-        <span class="menu-icon">🧠</span>
-        <span>
-          <strong>TokenScope Score Explained</strong><br>
-          <small style="color:var(--muted)
+<section id="menuPage" class="page">
+  <div class="title-row">
+    <div>
+      <h1>Menu</h1>
+      <div class="muted">TokenScope</div>
+    </div>
+  </div>
+
+  <div class="menu-list">
+
+    <button class="menu-item" onclick="openPage('scorePage')">
+      🧠 <strong>TokenScope Score Explained</strong>
+      <small>Understand how TokenScope evaluates tokens</small>
+    </button>
+
+    <button class="menu-item" onclick="openPage('watchlistPage')">
+      ⭐ <strong>Watchlist</strong>
+      <small>View your tracked tokens</small>
+    </button>
+
+    <button class="menu-item" onclick="showSettings()">
+      ⚙️ <strong>Settings</strong>
+      <small>Application preferences</small>
+    </button>
+
+    <button class="menu-item" onclick="showAlerts()">
+      🔔 <strong>Alerts Settings</strong>
+      <small>Configure token alerts</small>
+    </button>
+
+    <button class="menu-item" onclick="showHelp()">
+      ❓ <strong>Help & Support</strong>
+      <small>Get help with TokenScope</small>
+    </button>
+
+    <button class="menu-item" onclick="showAbout()">
+      ℹ️ <strong>About TokenScope</strong>
+      <small>Learn about the platform</small>
+    </button>
+
+    <button class="menu-item" onclick="showCommunity()">
+      🌐 <strong>Community</strong>
+      <small>Telegram • X • Discord</small>
+    </button>
+
+  </div>
+</section>
+
+</main>
+
+<div class="bottom">
+  <div class="nav">
+    <button onclick="openPage('screenerPage')" class="active">
+      <span>📊</span>Screener
+    </button>
+
+    <button onclick="openPage('searchPage')">
+      <span>🔎</span>Search
+    </button>
+
+    <button onclick="openPage('scorePage')">
+      <span>🧠</span>Score
+    </button>
+
+    <button onclick="openPage('watchlistPage')">
+      <span>⭐</span>Watchlist
+    </button>
+
+    <button onclick="openPage('menuPage')">
+      <span>☰</span>Menu
+    </button>
+  </div>
+</div>
+
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeModal()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+
+/*
+=========================================================
+TokenScope REAL FRONTEND
+=========================================================
+
+This frontend contains NO demo token array.
+
+All market/token information is requested from the
+TokenScope backend.
+
+Expected backend endpoints:
+
+GET /api/discover
+GET /api/search-token?q=...
+GET /api/token?address=...&chain=...
+GET /api/analyze?address=...&chain=...
+
+=========================================================
+*/
+
+const state = {
+  tokens: [],
+  searchResults: [],
+  watchlist: JSON.parse(localStorage.getItem("tokenscope_watchlist") || "[]")
+};
+
+const API = {
+  discover: "/api/discover",
+  search: "/api/search-token",
+  token: "/api/token",
+  analyze: "/api/analyze"
+};
+
+function money(value){
+  if(value === null || value === undefined || value === "")
+    return "—";
+
+  const n = Number(value);
+
+  if(!Number.isFinite(n)) return "—";
+
+  if(n >= 1e9) return "$" + (n/1e9).toFixed(2) + "B";
+  if(n >= 1e6) return "$" + (n/1e6).toFixed(2) + "M";
+  if(n >= 1e3) return "$" + (n/1e3).toFixed(2) + "K";
+
+  return "$" + n.toLocaleString(undefined,{
+    maximumFractionDigits:8
+  });
+}
+
+function number(value){
+  if(value === null || value === undefined || value === "")
+    return "—";
+
+  const n = Number(value);
+
+  if(!Number.isFinite(n)) return "—";
+
+  return n.toLocaleString();
+}
+
+function price(value){
+  if(value === null || value === undefined || value === "")
+    return "—";
+
+  const n = Number(value);
+
+  if(!Number.isFinite(n)) return "—";
+
+  if(n < 0.000001)
+    return "$" + n.toExponential(3);
+
+  if(n < 1)
+    return "$" + n.toFixed(8);
+
+  return "$" + n.toLocaleString(undefined,{
+    maximumFractionDigits:4
+  });
+}
+
+function change(value){
+  if(value === null || value === undefined || value === "")
+    return "—";
+
+  const n = Number(value);
+
+  if(!Number.isFinite(n)) return "—";
+
+  return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function getScore(token){
+
+  if(token.score !== undefined && token.score !== null)
+    return Number(token.score);
+
+  let score = 0;
+
+  const liquidity = Number(token.liquidity || 0);
+  const volume = Number(token.volume24h || token.volume || 0);
+  const marketCap = Number(token.marketCap || token.mcap || 0);
+
+  if(liquidity >= 1000000) score += 25;
+  else if(liquidity >= 250000) score += 18;
+  else if(liquidity >= 50000) score += 10;
+
+  if(volume >= 1000000) score += 25;
+  else if(volume >= 250000) score += 18;
+  else if(volume >= 50000) score += 10;
+
+  if(marketCap > 0) score += 15;
+
+  if(token.isVerified) score += 10;
+
+  if(token.holders >= 1000) score += 10;
+
+  if(token.securityScore >= 80) score += 15;
+
+  return Math.min(100,Math.round(score));
+}
+
+function analyzerMatch(token){
+
+  const liquidity = Number(token.liquidity || 0);
+  const volume = Number(token.volume24h || token.volume || 0);
+
+  /*
+    These are the initial measurable market conditions.
+    The backend Analyzer can later return the authoritative
+    result and reasons.
+  */
+
+  return liquidity >= 50000 &&
+         volume >= 25000;
+}
+
+function renderToken(token){
+
+  const score = getScore(token);
+  const matched =
+    token.analyzerMatch !== undefined
+      ? Boolean(token.analyzerMatch)
+      : analyzerMatch(token);
+
+  const logo =
+    token.logo ||
+    token.icon ||
+    "";
+
+  const name =
+    token.name ||
+    "Unknown Token";
+
+  const symbol =
+    token.symbol ||
+    "UNKNOWN";
+
+  const chain =
+    token.chain ||
+    "Unknown";
+
+  const address =
+    token.address ||
+    token.mint ||
+    token
